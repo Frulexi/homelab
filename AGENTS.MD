@@ -8,7 +8,6 @@
 
 **Timeline:** Phased approach with incremental delivery
 
-**Team:** Developer Agent + Reviewer Agent (AI-assisted development)
 
 ---
 
@@ -168,15 +167,13 @@ yaml
 
 ### 2.3 Service Deployment Playbook
 
-**Assigned to:** Developer Agent
-
-**Reviewed by:** Reviewer Agent
-
 **Deliverables:**
 
 - [ ]  `playbooks/deploy-services.yml`
 - [ ]  Role: `roles/docker-service/`
 - [ ]  Task to copy compose files
+- [ ]  Task to copy config directories (non-sensitive)
+- [ ]  Task to handle .env files and secrets
 - [ ]  Task to deploy with docker compose
 - [ ]  Task for Docker cleanup
 
@@ -187,6 +184,10 @@ yaml
 - `Dynamic service discovery from services/ directory
 - Copy docker-compose.yml to /opt/{service}/
 - Copy config directories if they exist
+- Handle .env files:
+  - Services should include `.env.example` files in repo (with placeholder values)
+  - Actual `.env` files with secrets managed via:
+    - Ansible vault for encrypted .env templates
 - Run docker compose up -d
 - Handle service restarts on changes
 - Cleanup old images/containers
@@ -194,36 +195,31 @@ yaml
 **Acceptance Criteria:**
 - Playbook discovers services automatically
 - Only changed services restart
+- Config files copied correctly (non-sensitive)
+- .env handling strategy documented and implemented
+- Secrets never exposed in logs or repository
+- Clear error messages if required secrets/env files missing
 - Proper error handling for failed deployments
 - Cleanup runs after successful deployment
-**Reviewer Focus:**
-- Use of `docker_compose_v2` module
-- Proper file permissions set
-- Changed detection works correctly
-- Rollback strategy for failures
 ---
-*## Phase 3: Service Migration (Week 2-3)### 3.1 Migrate Existing Services*
-**Deliverables:**
-- Migrate all 10-15 existing services to `services/` directory
-- Each service in its own subdirectory
-- Validate all compose files
-- Document any manual steps required per service
-**Service checklist template:**
-```
+
 services/
 ├── service-name/
-│ ├── docker-compose.yml
-│ ├── .env.example (if needed)
-│ ├── config/ (if needed)
-│ └── README.md (service-specific notes)`
+│   ├── docker-compose.yml
+│   ├── .env.example (template with placeholders)
+│   ├── config/ (non-sensitive configs only)
+│   └── README.md (service-specific notes including secret requirements)
 
 **For each service:**
 
 - [ ]  Compose file validated (`docker compose config`)
 - [ ]  Volume paths use relative or configurable paths
 - [ ]  Networks defined if inter-service communication needed
-- [ ]  Environment variables documented
-- [ ]  Any secrets handled properly
+- [ ]  Environment variables documented in README.md
+- [ ]  `.env.example` created with all required variables (placeholder values)
+- [ ]  Actual `.env` excluded from git (verify .gitignore)
+- [ ]  Secrets handling documented (what needs vault/manual setup)
+
 
 **Acceptance Criteria:**
 
