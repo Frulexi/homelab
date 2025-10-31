@@ -1,0 +1,25 @@
+---
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Ensure baseline security packages are present (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name:
+      - openssh-server
+      - ufw
+      - fail2ban
+      - unattended-upgrades
+      - rsyslog
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Ensure firewalld is removed when not required
+  ansible.builtin.package:
+    name: firewalld
+    state: absent
+  when:
+    - ansible_os_family == "Debian"
+    - security_firewall_enabled | bool

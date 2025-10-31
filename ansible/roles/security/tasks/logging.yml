@@ -1,0 +1,23 @@
+---
+- name: Configure remote syslog forwarding when enabled
+  ansible.builtin.template:
+    src: rsyslog-remote.conf.j2
+    dest: /etc/rsyslog.d/50-homelab-remote.conf
+    owner: root
+    group: root
+    mode: "0644"
+  when: security_syslog_remote_host | length > 0
+  notify: Restart rsyslog
+
+- name: Remove remote syslog forwarding when disabled
+  ansible.builtin.file:
+    path: /etc/rsyslog.d/50-homelab-remote.conf
+    state: absent
+  when: security_syslog_remote_host | length == 0
+  notify: Restart rsyslog
+
+- name: Ensure rsyslog service is enabled and running
+  ansible.builtin.service:
+    name: rsyslog
+    state: started
+    enabled: true

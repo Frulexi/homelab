@@ -1,0 +1,11 @@
+---
+- name: Apply baseline security hardening
+  hosts: homelab
+  become: true
+  gather_facts: true
+
+  collections:
+    - community.general
+
+  roles:
+    - security

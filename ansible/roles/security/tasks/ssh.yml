@@ -1,0 +1,52 @@
+---
+- name: Determine SSH service name
+  ansible.builtin.set_fact:
+    security_effective_ssh_service: "{{ security_ssh_service_name | default('ssh' if ansible_os_family == 'Debian' else 'sshd') }}"
+
+- name: Ensure SSH drop-in directory exists
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy SSH hardening overrides
+  ansible.builtin.template:
+    src: ssh_hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/99-homelab-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart SSH
+
+- name: Ensure SSH daemon listens on requested port
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^Port\\s+"
+    line: "Port {{ security_ssh_port }}"
+    state: present
+    insertafter: "^#Port"
+  notify: Restart SSH
+
+- name: Disable password authentication explicitly
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication\\s+"
+    line: "PasswordAuthentication {{ security_ssh_password_authentication }}"
+    state: present
+  notify: Restart SSH
+
+- name: Ensure root login policy is enforced
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^PermitRootLogin\\s+"
+    line: "PermitRootLogin {{ security_ssh_permit_root_login }}"
+    state: present
+  notify: Restart SSH
+
+- name: Ensure SSH daemon is enabled and running
+  ansible.builtin.service:
+    name: "{{ security_effective_ssh_service }}"
+    state: started
+    enabled: true

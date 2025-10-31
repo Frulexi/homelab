@@ -1,0 +1,7 @@
+// Managed by Ansible
+Unattended-Upgrade::Automatic-Reboot "{{ 'true' if security_unattended_upgrades_auto_reboot | bool else 'false' }}";
+Unattended-Upgrade::Automatic-Reboot-Time "{{ security_unattended_upgrades_reboot_time }}";
+{% if security_unattended_upgrades_email %}
+Unattended-Upgrade::Mail "{{ security_unattended_upgrades_email }}";
+Unattended-Upgrade::MailOnlyOnError "true";
+{% endif %}

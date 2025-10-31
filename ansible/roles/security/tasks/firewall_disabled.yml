@@ -1,0 +1,4 @@
+---
+- name: Ensure UFW is disabled
+  community.general.ufw:
+    state: disabled

@@ -1,0 +1,9 @@
+# Managed by Ansible: fail2ban SSH hardening
+[sshd]
+enabled = true
+port = {{ security_ssh_port }}
+filter = sshd
+maxretry = {{ security_fail2ban_maxretry }}
+findtime = {{ security_fail2ban_findtime }}
+bantime = {{ security_fail2ban_bantime }}
+backend = systemd

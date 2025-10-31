@@ -1,0 +1,28 @@
+# Managed by Ansible: SSH hardening overrides
+Port {{ security_ssh_port }}
+Protocol 2
+PermitRootLogin {{ security_ssh_permit_root_login }}
+PasswordAuthentication {{ security_ssh_password_authentication }}
+ChallengeResponseAuthentication no
+UsePAM yes
+X11Forwarding no
+AllowTcpForwarding no
+PermitEmptyPasswords no
+MaxAuthTries 3
+LoginGraceTime 30
+ClientAliveInterval 300
+ClientAliveCountMax 2
+Compression no
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
+PubkeyAuthentication yes
+{% if security_ssh_banner %}
+Banner {{ security_ssh_banner }}
+{% endif %}
+{% if security_ssh_allow_users %}
+AllowUsers {{ security_ssh_allow_users | join(' ') }}
+{% endif %}
+{% if security_ssh_allow_groups %}
+AllowGroups {{ security_ssh_allow_groups | join(' ') }}
+{% endif %}

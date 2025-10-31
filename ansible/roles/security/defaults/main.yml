@@ -1,0 +1,33 @@
+# SSH configuration
+security_ssh_port: 22
+security_ssh_permit_root_login: "no"
+security_ssh_password_authentication: "no"
+security_ssh_allow_users: []
+security_ssh_allow_groups: []
+security_ssh_banner: false
+
+# Firewall (UFW) configuration
+security_firewall_enabled: true
+security_firewall_allowed_tcp_ports:
+  - "{{ security_ssh_port }}"
+security_firewall_allowed_udp_ports: []
+
+# Fail2ban configuration
+security_fail2ban_enabled: true
+security_fail2ban_maxretry: 5
+security_fail2ban_findtime: 600
+security_fail2ban_bantime: 3600
+
+# Automatic security updates
+security_automatic_updates_enabled: true
+security_unattended_upgrades_email: ""
+security_unattended_upgrades_auto_reboot: true
+security_unattended_upgrades_reboot_time: "02:30"
+
+# Logging
+security_syslog_remote_host: ""
+security_syslog_remote_port: 514
+security_syslog_protocol: udp
+
+# Services to disable
+security_disable_services: []

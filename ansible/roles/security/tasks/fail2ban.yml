@@ -1,0 +1,23 @@
+---
+- name: Ensure fail2ban jail.d directory exists
+  ansible.builtin.file:
+    path: /etc/fail2ban/jail.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy fail2ban SSH jail configuration
+  ansible.builtin.template:
+    src: fail2ban_sshd.conf.j2
+    dest: /etc/fail2ban/jail.d/ssh-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart fail2ban
+
+- name: Ensure fail2ban service is enabled and running
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true

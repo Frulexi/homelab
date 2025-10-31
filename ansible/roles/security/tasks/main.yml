@@ -1,0 +1,28 @@
+---
+- name: Include package prerequisites
+  ansible.builtin.import_tasks: prerequisites.yml
+
+- name: Apply SSH hardening
+  ansible.builtin.import_tasks: ssh.yml
+
+- name: Configure firewall
+  ansible.builtin.import_tasks: firewall.yml
+  when: security_firewall_enabled | bool
+
+- name: Disable firewall when explicitly disabled
+  ansible.builtin.import_tasks: firewall_disabled.yml
+  when: not (security_firewall_enabled | bool)
+
+- name: Configure fail2ban
+  ansible.builtin.import_tasks: fail2ban.yml
+  when: security_fail2ban_enabled | bool
+
+- name: Configure automatic security updates
+  ansible.builtin.import_tasks: unattended_upgrades.yml
+  when: security_automatic_updates_enabled | bool
+
+- name: Configure system logging
+  ansible.builtin.import_tasks: logging.yml
+
+- name: Disable unnecessary services
+  ansible.builtin.import_tasks: services.yml

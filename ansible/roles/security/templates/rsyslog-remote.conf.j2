@@ -1,0 +1,7 @@
+# Managed by Ansible
+{% set transport_prefix = '@@' if security_syslog_protocol | lower == 'tcp' else '@' %}
+*.* {{ transport_prefix }}{{ security_syslog_remote_host }}:{{ security_syslog_remote_port }};RSYSLOG_SyslogProtocol23Format
+{% if security_syslog_protocol | lower == 'tcp' %}
+$ActionSendStreamDriverMode 1
+$ActionSendStreamDriverAuthMode anon
+{% endif %}

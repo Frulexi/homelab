@@ -1,0 +1,8 @@
+---
+- name: Disable declared unnecessary services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop: "{{ security_disable_services | default([]) }}"
+  when: security_disable_services | length > 0
