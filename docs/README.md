@@ -7,6 +7,7 @@
 - `ARCHITECTURE.md` – high-level system overview (to be authored).
 - `DISASTER_RECOVERY.md` – backup and restoration plan (to be authored).
 - `hardening.md` – details of the baseline system hardening playbook.
+- `docker_setup.md` – Docker Engine installation and configuration playbook.
 - `services.md` – catalog of homelab services (to be authored).
 
 ## Work Log
@@ -18,10 +19,10 @@
 - `security` role created (SSH/UFW/fail2ban/unattended upgrades/logging) with supporting templates.
 - `playbooks/hardening.yml` playbook authored and validated via `ansible-playbook --syntax-check`.
 - `docs/hardening.md` documents variables and execution details for the hardening playbook.
+- `playbooks/docker-setup.yml` created with supporting `docker` role; documented in `docs/docker_setup.md`.
 
 ### Next Up
 - Duplicate `group_vars` for staging (`ansible/inventory/staging/group_vars/homelab.yml`) if needed.
-- Implement Phase 2.2: Docker installation role and `playbooks/docker-setup.yml`.
 - Author service deployment role/playbook for Phase 2.3.
 - Begin documenting setup/deployment/maintenance guides in `docs/`.
 - Prepare GitHub Actions workflows for validation and deployment pipelines.

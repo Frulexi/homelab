@@ -22,3 +22,16 @@ security_disable_services: []
 security_syslog_remote_host: ""
 security_syslog_remote_port: 514
 security_syslog_protocol: udp
+
+# Docker defaults. Adjust per environment as needed.
+docker_users: []
+docker_directories:
+  - path: /opt/docker
+    owner: root
+    group: docker
+    mode: "0755"
+docker_daemon_config:
+  log-driver: json-file
+  log-opts:
+    max-size: "10m"
+    max-file: "5"
