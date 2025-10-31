@@ -1,0 +1,128 @@
+---
+- name: Ensure platform is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == "Debian"
+    fail_msg: "The docker role currently supports Debian-based distributions only."
+
+- name: Determine Docker repository architecture
+  ansible.builtin.set_fact:
+    docker_repo_arch: "{{ docker_arch_map.get(ansible_architecture, ansible_architecture) }}"
+
+- name: Determine if apt-transport-https is required
+  ansible.builtin.set_fact:
+    docker_require_apt_transport: "{{ (ansible_distribution == 'Debian' and (ansible_distribution_major_version | int) < 10) or (ansible_distribution == 'Ubuntu' and (ansible_distribution_major_version | int) < 20) }}"
+
+- name: Compose Docker repository prerequisites list
+  ansible.builtin.set_fact:
+    docker_apt_dependency_list: "{{ docker_apt_dependencies + (['apt-transport-https'] if docker_require_apt_transport else []) }}"
+
+- name: Discover existing Docker repository definitions
+  ansible.builtin.find:
+    paths: /etc/apt/sources.list.d
+    patterns: "{{ docker_repo_sources_pattern }}"
+  register: docker_existing_repo_files
+  when: docker_cleanup_legacy_repos
+
+- name: Remove legacy Docker repository definitions
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ docker_existing_repo_files.files | default([]) }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - docker_cleanup_legacy_repos
+    - (docker_existing_repo_files.matched | default(0)) > 0
+
+- name: Install Docker repository prerequisites
+  ansible.builtin.apt:
+    name: "{{ docker_apt_dependency_list }}"
+    state: present
+    update_cache: true
+  when: docker_apt_dependency_list | length > 0
+
+- name: Ensure APT keyring directory exists
+  ansible.builtin.file:
+    path: "{{ docker_repo_keyring_path | dirname }}"
+    state: directory
+    mode: "0755"
+
+- name: Install Docker repository GPG key
+  ansible.builtin.get_url:
+    url: "{{ docker_repo_gpg_url }}"
+    dest: "{{ docker_repo_keyring_path }}"
+    mode: "0644"
+
+- name: Configure Docker APT repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [arch={{ docker_repo_arch }} signed-by={{ docker_repo_keyring_path }}]
+      {{ docker_repo_url }}/{{ ansible_distribution | lower }}
+      {{ ansible_distribution_release }}
+      {{ docker_repo_components | join(' ') }}
+    state: present
+    filename: docker
+
+- name: Install Docker packages
+  ansible.builtin.apt:
+    name: "{{ docker_packages }}"
+    state: "{{ docker_pkg_state }}"
+    update_cache: true
+  notify: Restart docker
+
+- name: Ensure Docker group exists
+  ansible.builtin.group:
+    name: "{{ docker_group }}"
+    state: present
+
+- name: Ensure Docker service account is present
+  ansible.builtin.user:
+    name: "{{ docker_service_account.name }}"
+    comment: "{{ docker_service_account.comment }}"
+    home: "{{ docker_service_account.home }}"
+    shell: "{{ docker_service_account.shell }}"
+    groups: "{{ docker_group }}"
+    append: true
+    state: present
+    create_home: true
+  when: docker_create_service_account
+
+- name: Add users to Docker group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ docker_group }}"
+    append: true
+    state: present
+  loop: "{{ docker_users }}"
+  when: docker_users | length > 0
+
+- name: Ensure Docker directories exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0755') }}"
+  loop: "{{ docker_directories }}"
+
+- name: Ensure Docker configuration directory exists
+  ansible.builtin.file:
+    path: /etc/docker
+    state: directory
+    mode: "0755"
+
+- name: Render Docker daemon configuration
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: "0644"
+  notify: Restart docker
+
+- name: Enable and start Docker service
+  ansible.builtin.systemd:
+    name: "{{ docker_service_name }}"
+    enabled: "{{ docker_service_enabled }}"
+    state: "{{ docker_service_state }}"
+    daemon_reload: true
+  when: docker_manage_service

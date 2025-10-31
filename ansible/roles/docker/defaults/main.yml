@@ -1,0 +1,67 @@
+---
+# Docker role defaults. Override in group_vars or host_vars when needed.
+
+# Base repository endpoints; adjust when mirroring the Docker repo.
+docker_repo_url: https://download.docker.com/linux
+docker_repo_gpg_url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+
+# Repository component selection and keyring placement.
+docker_repo_components:
+  - stable
+docker_repo_keyring_path: /etc/apt/keyrings/docker.asc
+docker_repo_sources_pattern: "docker*.list"
+docker_cleanup_legacy_repos: true
+
+# Generic apt dependencies required before enabling the Docker repo.
+docker_apt_dependencies:
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+
+# Package set and install behaviour.
+docker_pkg_state: present
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+
+# Group management and optional service account.
+docker_group: docker
+docker_users: []
+docker_create_service_account: false
+docker_service_account:
+  name: docker
+  comment: Docker Service Account
+  home: /var/lib/docker
+  shell: /usr/sbin/nologin
+
+# Service control flags.
+docker_manage_service: true
+docker_service_name: docker
+docker_service_enabled: true
+docker_service_state: started
+
+# Directories that should always be present.
+docker_directories:
+  - path: /opt/docker
+    mode: "0755"
+    owner: root
+    group: root
+
+# Daemon configuration applied via /etc/docker/daemon.json.
+docker_daemon_config:
+  log-driver: json-file
+  log-opts:
+    max-size: "10m"
+    max-file: "3"
+docker_daemon_registries: []
+
+# Mapping from Ansible architecture fact to Docker repo arch names.
+docker_arch_map:
+  x86_64: amd64
+  amd64: amd64
+  aarch64: arm64
+  armv7l: armhf

@@ -203,8 +203,6 @@ yaml
 - Rollback strategy for failures
 ---
 *## Phase 3: Service Migration (Week 2-3)### 3.1 Migrate Existing Services*
-**Assigned to:** Developer Agent
-**Reviewed by:** Reviewer Agent
 **Deliverables:**
 - Migrate all 10-15 existing services to `services/` directory
 - Each service in its own subdirectory

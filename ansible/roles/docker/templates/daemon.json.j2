@@ -1,0 +1,5 @@
+{%- set combined = docker_daemon_config %}
+{%- if docker_daemon_registries %}
+{%-   set combined = docker_daemon_config | combine({'registry-mirrors': docker_daemon_registries}) %}
+{%- endif %}
+{{ combined | to_nice_json }}
