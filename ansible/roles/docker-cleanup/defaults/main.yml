@@ -1,0 +1,28 @@
+---
+docker_cleanup_level: standard
+docker_cleanup_levels:
+  light:
+    prune_images: true
+    prune_containers: false
+    prune_networks: false
+    prune_volumes: false
+    prune_builder: false
+  standard:
+    prune_images: true
+    prune_containers: true
+    prune_networks: true
+    prune_volumes: false
+    prune_builder: true
+  deep:
+    prune_images: true
+    prune_containers: true
+    prune_networks: true
+    prune_volumes: true
+    prune_builder: true
+docker_cleanup_filters:
+  images: []
+  containers: []
+  networks: []
+  volumes: []
+docker_cleanup_docker_binary: docker
+docker_cleanup_prune_timeout: 600

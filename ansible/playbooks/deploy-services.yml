@@ -1,0 +1,18 @@
+---
+- name: Deploy Docker services
+  hosts: all
+  become: true
+  roles:
+    - role: docker_service
+
+- name: Cleanup Docker resources
+  hosts: all
+  become: true
+  tasks:
+    - name: Run docker cleanup
+      when: docker_service_run_cleanup | default(true)
+      ansible.builtin.include_role:
+        name: docker-cleanup
+      vars:
+        docker_cleanup_level: "{{ docker_service_cleanup_level | default('standard') }}"
+        docker_cleanup_filters: "{{ docker_service_cleanup_filters | default({}) }}"

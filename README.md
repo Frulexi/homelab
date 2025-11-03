@@ -26,7 +26,7 @@ homelab/
 3. Populate `services/` with per-service Docker Compose bundles.
 4. Run playbooks from the repository root, e.g.:
    ```bash
-   ansible-playbook -i ansible/inventory/production ansible/playbooks/hardening.yml
+   ansible-playbook -i ansible/inventory/production ansible/playbooks/hardening.yml 
    ```
 
 Further documentation lives in the `docs/` directory and will be expanded throughout the project phases.

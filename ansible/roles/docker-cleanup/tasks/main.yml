@@ -1,0 +1,100 @@
+---
+- name: Validate cleanup level
+  ansible.builtin.assert:
+    that:
+      - docker_cleanup_level in docker_cleanup_levels.keys()
+    fail_msg: >-
+      Invalid docker cleanup level "{{ docker_cleanup_level }}". Choose from:
+      {{ docker_cleanup_levels.keys() | list | join(', ') }}.
+
+- name: Set cleanup plan
+  ansible.builtin.set_fact:
+    docker_cleanup_plan: "{{ docker_cleanup_levels[docker_cleanup_level] }}"
+
+- name: Display cleanup plan
+  ansible.builtin.debug:
+    var: docker_cleanup_plan
+    verbosity: 1
+
+- name: Build filter arguments
+  ansible.builtin.set_fact:
+    docker_cleanup_image_filter_args: "{{ (docker_cleanup_filters.get('images', [])) | map('regex_replace', '^(.*)$', '--filter=\\1') | list }}"
+    docker_cleanup_container_filter_args: "{{ (docker_cleanup_filters.get('containers', [])) | map('regex_replace', '^(.*)$', '--filter=\\1') | list }}"
+    docker_cleanup_network_filter_args: "{{ (docker_cleanup_filters.get('networks', [])) | map('regex_replace', '^(.*)$', '--filter=\\1') | list }}"
+    docker_cleanup_volume_filter_args: "{{ (docker_cleanup_filters.get('volumes', [])) | map('regex_replace', '^(.*)$', '--filter=\\1') | list }}"
+
+- name: Prune stopped containers
+  ansible.builtin.command:
+    argv: "{{ [docker_cleanup_docker_binary, 'container', 'prune', '-f'] + docker_cleanup_container_filter_args }}"
+  register: docker_cleanup_containers
+  changed_when: "'Total reclaimed space: 0B' not in docker_cleanup_containers.stdout"
+  when: docker_cleanup_plan.prune_containers
+  vars:
+    ansible_command_timeout: "{{ docker_cleanup_prune_timeout }}"
+
+- name: Prune unused networks
+  ansible.builtin.command:
+    argv: "{{ [docker_cleanup_docker_binary, 'network', 'prune', '-f'] + docker_cleanup_network_filter_args }}"
+  register: docker_cleanup_networks
+  changed_when: "'Total reclaimed space: 0B' not in docker_cleanup_networks.stdout"
+  when: docker_cleanup_plan.prune_networks
+  vars:
+    ansible_command_timeout: "{{ docker_cleanup_prune_timeout }}"
+
+- name: Prune dangling/unused images
+  ansible.builtin.command:
+    argv: "{{ [docker_cleanup_docker_binary, 'image', 'prune', '-a', '-f'] + docker_cleanup_image_filter_args }}"
+  register: docker_cleanup_images
+  changed_when: "'Total reclaimed space: 0B' not in docker_cleanup_images.stdout"
+  when: docker_cleanup_plan.prune_images
+  vars:
+    ansible_command_timeout: "{{ docker_cleanup_prune_timeout }}"
+
+- name: Prune unused volumes
+  ansible.builtin.command:
+    argv: "{{ [docker_cleanup_docker_binary, 'volume', 'prune', '-f'] + docker_cleanup_volume_filter_args }}"
+  register: docker_cleanup_volumes
+  changed_when: "'Total reclaimed space: 0B' not in docker_cleanup_volumes.stdout"
+  when: docker_cleanup_plan.prune_volumes
+  vars:
+    ansible_command_timeout: "{{ docker_cleanup_prune_timeout }}"
+
+- name: Prune build cache
+  ansible.builtin.command:
+    argv: "{{ [docker_cleanup_docker_binary, 'builder', 'prune', '-f'] }}"
+  register: docker_cleanup_builder
+  changed_when: "'Total reclaimed space: 0B' not in docker_cleanup_builder.stdout"
+  when: docker_cleanup_plan.prune_builder
+  vars:
+    ansible_command_timeout: "{{ docker_cleanup_prune_timeout }}"
+
+- name: Summarize cleanup actions
+  ansible.builtin.debug:
+    msg:
+      - "Cleanup level: {{ docker_cleanup_level }}"
+      - >
+        Containers: {{
+          (docker_cleanup_containers.changed | default(false))
+          | ternary('pruned', 'skipped')
+        }}
+      - >
+        Networks: {{
+          (docker_cleanup_networks.changed | default(false))
+          | ternary('pruned', 'skipped')
+        }}
+      - >
+        Images: {{
+          (docker_cleanup_images.changed | default(false))
+          | ternary('pruned', 'skipped')
+        }}
+      - >
+        Volumes: {{
+          (docker_cleanup_volumes.changed | default(false))
+          | ternary('pruned', 'skipped')
+        }}
+      - >
+        Build cache: {{
+          (docker_cleanup_builder.changed | default(false))
+          | ternary('pruned', 'skipped')
+        }}
+  when: ansible_verbosity | default(0) | int > 0

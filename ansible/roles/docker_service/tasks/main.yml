@@ -1,0 +1,197 @@
+---
+- name: Gather docker service metadata on control node
+  run_once: true
+  delegate_to: localhost
+  become: false
+  vars:
+    docker_service_source_root_path: >-
+      {{
+        docker_service_source_root
+        | default(((playbook_dir + '/../..') | realpath) + '/services')
+      }}
+  block:
+
+    - name: Initialize docker service aggregation facts
+      ansible.builtin.set_fact:
+        docker_service_catalog: {}
+        docker_service_selected_meta: []
+        docker_service_selected_names: []
+        docker_service_available: []
+
+    - name: Ensure service source root exists
+      ansible.builtin.stat:
+        path: "{{ docker_service_source_root_path }}"
+      register: docker_service_source_root_stat
+
+    - name: Validate service source root
+      ansible.builtin.assert:
+        that:
+          - docker_service_source_root_stat.stat.exists
+          - docker_service_source_root_stat.stat.isdir
+        fail_msg: >-
+          Service source root {{ docker_service_source_root_path }} does not
+          exist or is not a directory.
+
+    - name: Discover docker compose definitions
+      ansible.builtin.find:
+        paths: "{{ docker_service_source_root_path }}"
+        patterns: docker-compose.yml
+        recurse: true
+        file_type: file
+        follow: false
+      register: docker_service_compose_files
+
+    - name: Fail when no services discovered
+      ansible.builtin.assert:
+        that:
+          - docker_service_compose_files.matched | default(0) | int > 0
+        fail_msg: >-
+          No docker-compose.yml files found under
+          {{ docker_service_source_root_path }}. Ensure services are defined.
+
+    - name: Register service metadata
+      vars:
+        service_src: "{{ item.path | dirname }}"
+        service_name: "{{ service_src | basename }}"
+        service_config: "{{ service_src + '/config' }}"
+        service_env_example: "{{ service_src + '/.env.example' }}"
+        service_relative: "{{ service_src | replace(docker_service_source_root_path + '/', '') }}"
+      ansible.builtin.set_fact:
+        docker_service_catalog: "{{ docker_service_catalog | default({}) | combine({
+          service_name: {
+            'name': service_name,
+            'src_dir': service_src,
+            'relative_path': service_relative,
+            'compose_src': item.path,
+            'config_src': service_config,
+            'env_example_src': service_env_example
+          }
+        }) }}"
+      loop: "{{ docker_service_compose_files.files | sort(attribute='path') }}"
+
+    - name: Capture config directory presence
+      ansible.builtin.stat:
+        path: "{{ item.value.config_src }}"
+      register: docker_service_config_stats
+      loop: "{{ (docker_service_catalog | default({})) | dict2items | sort(attribute='key') }}"
+      loop_control:
+        label: "{{ item.key }}"
+
+    - name: Merge config metadata
+      ansible.builtin.set_fact:
+        docker_service_catalog: "{{ docker_service_catalog | default({}) | combine({
+          item.item.key: (docker_service_catalog.get(item.item.key, {})) | combine({
+            'config_exists': item.stat.isdir | default(false)
+          })
+        }) }}"
+      loop: "{{ docker_service_config_stats.results }}"
+
+    - name: Capture env example presence
+      ansible.builtin.stat:
+        path: "{{ item.value.env_example_src }}"
+      register: docker_service_env_example_stats
+      loop: "{{ (docker_service_catalog | default({})) | dict2items | sort(attribute='key') }}"
+      loop_control:
+        label: "{{ item.key }}"
+
+    - name: Merge env example metadata
+      ansible.builtin.set_fact:
+        docker_service_catalog: "{{ docker_service_catalog | default({}) | combine({
+          item.item.key: (docker_service_catalog.get(item.item.key, {})) | combine({
+            'env_example_exists': item.stat.exists | default(false)
+          })
+        }) }}"
+      loop: "{{ docker_service_env_example_stats.results }}"
+
+    - name: Determine available services
+      ansible.builtin.set_fact:
+        docker_service_available: "{{ (docker_service_catalog | default({})).keys() | list | sort }}"
+
+    - name: Validate requested service targets
+      ansible.builtin.set_fact:
+        docker_service_unknown_targets: "{{ docker_service_targets | difference(docker_service_available) }}"
+      when: docker_service_targets | length > 0
+
+    - name: Fail when requested services are missing
+      ansible.builtin.assert:
+        that:
+          - docker_service_unknown_targets | length == 0
+        fail_msg: >-
+          Requested services not found: {{ docker_service_unknown_targets | join(', ') }}.
+      when: docker_service_targets | length > 0
+
+    - name: Select services for deployment
+      ansible.builtin.set_fact:
+        docker_service_selected_names: "{{ (docker_service_targets if (docker_service_targets | length > 0) else docker_service_available | default([])) | list }}"
+
+    - name: Ensure selected services list not empty
+      ansible.builtin.assert:
+        that:
+          - docker_service_selected_names | length > 0
+        fail_msg: "No services selected for deployment."
+
+    - name: Annotate secret availability
+      ansible.builtin.set_fact:
+        docker_service_catalog: "{{ docker_service_catalog | default({}) | combine({
+          item: docker_service_catalog[item] | combine({
+            'env_secret_present': docker_service_env_files.get(item, None) is not none
+          })
+        }) }}"
+      loop: "{{ docker_service_selected_names }}"
+
+    - name: Ensure required secrets are supplied
+      vars:
+        relevant_required: "{{ docker_service_required_env | intersect(docker_service_selected_names) }}"
+        missing_required_env: "{{ relevant_required | difference(docker_service_env_files.keys() | list) }}"
+      ansible.builtin.assert:
+        that:
+          - missing_required_env | length == 0
+        fail_msg: >-
+          Missing .env secret definitions for required services:
+          {{ missing_required_env | join(', ') }}. Add entries under docker_service_env_files.
+      when: docker_service_required_env | length > 0
+
+    - name: Build selected service metadata list
+      ansible.builtin.set_fact:
+        docker_service_selected_meta: "{{ docker_service_selected_meta | default([]) | list }}"
+
+    - name: Append metadata for selected services
+      ansible.builtin.set_fact:
+        docker_service_selected_meta: "{{ (docker_service_selected_meta | default([])) + [ docker_service_catalog[item] ] }}"
+      loop: "{{ docker_service_selected_names }}"
+
+    - name: Persist discovery facts on control node
+      ansible.builtin.set_fact:
+        docker_service_source_root_resolved: "{{ docker_service_source_root_path }}"
+        docker_service_selected_names: "{{ docker_service_selected_names }}"
+        docker_service_selected_meta: "{{ docker_service_selected_meta }}"
+
+- name: Cache docker service metadata for managed host
+  ansible.builtin.set_fact:
+    docker_service_source_root_resolved: "{{ hostvars['localhost'].docker_service_source_root_resolved }}"
+    docker_service_selected_meta: "{{ hostvars['localhost'].docker_service_selected_meta }}"
+    docker_service_selected_names: "{{ hostvars['localhost'].docker_service_selected_names }}"
+  when: hostvars['localhost'].docker_service_selected_meta | default([]) | length > 0
+
+- name: Ensure service metadata available
+  ansible.builtin.assert:
+    that:
+      - docker_service_selected_meta | length > 0
+    fail_msg: "docker_service_selected_meta is empty; nothing to deploy."
+
+- name: Ensure destination root exists
+  ansible.builtin.file:
+    path: "{{ docker_service_dest_root }}"
+    state: directory
+    owner: "{{ docker_service_owner }}"
+    group: "{{ docker_service_group }}"
+    mode: "{{ docker_service_directory_mode }}"
+
+- name: Deploy docker services
+  ansible.builtin.include_tasks: service.yml
+  loop: "{{ docker_service_selected_meta }}"
+  loop_control:
+    loop_var: docker_service_item
+    label: "{{ docker_service_item.name }}"
+  vars:
+    docker_service_env_content: "{{ docker_service_env_files.get(docker_service_item.name, None) }}"

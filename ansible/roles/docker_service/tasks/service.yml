@@ -1,0 +1,93 @@
+---
+- name: Ensure service directory exists
+  ansible.builtin.file:
+    path: "{{ docker_service_dest_root }}/{{ docker_service_item.name }}"
+    state: directory
+    owner: "{{ docker_service_owner }}"
+    group: "{{ docker_service_group }}"
+    mode: "{{ docker_service_directory_mode }}"
+
+- name: Deploy docker-compose.yml
+  ansible.builtin.copy:
+    src: "{{ docker_service_item.compose_src }}"
+    dest: "{{ docker_service_dest_root }}/{{ docker_service_item.name }}/docker-compose.yml"
+    owner: "{{ docker_service_owner }}"
+    group: "{{ docker_service_group }}"
+    mode: "{{ docker_service_compose_mode }}"
+  register: docker_service_compose_copy
+
+- name: Synchronize configuration directory
+  ansible.builtin.copy:
+    src: "{{ docker_service_item.config_src }}/"
+    dest: "{{ docker_service_dest_root }}/{{ docker_service_item.name }}/config/"
+    owner: "{{ docker_service_owner }}"
+    group: "{{ docker_service_group }}"
+    mode: "{{ docker_service_config_file_mode }}"
+    directory_mode: "{{ docker_service_config_dir_mode }}"
+  when: docker_service_item.config_exists | default(false)
+  register: docker_service_config_copy
+
+- name: Ensure stale configuration directory removed
+  ansible.builtin.file:
+    path: "{{ docker_service_dest_root }}/{{ docker_service_item.name }}/config"
+    state: absent
+  when:
+    - not docker_service_item.config_exists | default(false)
+    - docker_service_purge_stale_config | default(false)
+
+- name: Render .env file when secrets provided
+  ansible.builtin.copy:
+    content: "{{ docker_service_env_content }}"
+    dest: "{{ docker_service_dest_root }}/{{ docker_service_item.name }}/.env"
+    owner: "{{ docker_service_owner }}"
+    group: "{{ docker_service_group }}"
+    mode: "{{ docker_service_env_mode }}"
+  when: docker_service_env_content is not none
+  register: docker_service_env_copy
+  no_log: true
+
+- name: Remove managed .env when secrets removed
+  ansible.builtin.file:
+    path: "{{ docker_service_dest_root }}/{{ docker_service_item.name }}/.env"
+    state: absent
+  when:
+    - docker_service_env_content is none
+    - docker_service_purge_missing_env | default(false)
+
+- name: Validate docker compose configuration
+  ansible.builtin.command:
+    argv: "{{ docker_service_compose_command + ['--project-name', docker_service_project_prefix ~ docker_service_item.name, 'config'] }}"
+    chdir: "{{ docker_service_dest_root }}/{{ docker_service_item.name }}"
+  register: docker_service_config_validation
+  changed_when: false
+  environment: "{{ docker_service_extra_environment }}"
+  when: docker_service_validate_config
+
+- name: Determine whether deployment is required
+  ansible.builtin.set_fact:
+    docker_service_should_deploy: >-
+      {{
+        docker_service_force_recreate
+        or docker_service_always_run
+        or docker_service_compose_copy.changed
+        or (docker_service_config_copy is defined and docker_service_config_copy.changed)
+        or (docker_service_env_copy is defined and docker_service_env_copy.changed)
+      }}
+
+- name: Deploy docker compose project
+  ansible.builtin.command:
+    argv: "{{ docker_service_compose_command + ['--project-name', docker_service_project_prefix ~ docker_service_item.name, 'up', '-d'] }}"
+    chdir: "{{ docker_service_dest_root }}/{{ docker_service_item.name }}"
+  register: docker_service_up_result
+  changed_when: true
+  environment: "{{ docker_service_extra_environment }}"
+  when: docker_service_should_deploy
+
+- name: Record deployment summary
+  ansible.builtin.debug:
+    msg: >-
+      Service {{ docker_service_item.name }}:
+      {{ 'updated' if docker_service_should_deploy else 'no changes detected' }}.
+  vars:
+    ansible_callback_did_not_suppress: true
+  when: ansible_verbosity | default(0) | int > 0

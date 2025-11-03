@@ -1,0 +1,24 @@
+---
+docker_service_source_root: "{{ playbook_dir}}/../../services"
+docker_service_dest_root: /opt/homelab/services
+docker_service_owner: root
+docker_service_group: docker
+docker_service_directory_mode: "0755"
+docker_service_compose_mode: "0644"
+docker_service_config_dir_mode: "0755"
+docker_service_config_file_mode: "0644"
+docker_service_env_mode: "0640"
+docker_service_targets: []
+docker_service_env_files: {}
+docker_service_required_env: []
+docker_service_force_recreate: false
+docker_service_always_run: false
+docker_service_project_prefix: ""
+docker_service_compose_command: ["docker", "compose"]
+docker_service_validate_config: true
+docker_service_run_cleanup: true
+docker_service_cleanup_level: standard
+docker_service_cleanup_filters: {}
+docker_service_extra_environment: {}
+docker_service_purge_stale_config: false
+docker_service_purge_missing_env: false
