@@ -170,70 +170,105 @@ yaml
 **Deliverables:**
 
 - [ ]  `playbooks/deploy-services.yml`
-- [ ]  Role: `roles/docker-service/`
-- [ ]  Task to copy compose files
-- [ ]  Task to copy config directories (non-sensitive)
-- [ ]  Task to handle .env files and secrets
-- [ ]  Task to deploy with docker compose
-- [ ]  Task for Docker cleanup
+- [ ]  Role: `roles/docker-service/`
+  - Task to copy compose files
+  - Task to copy config directories (non-sensitive)
+  - Task to handle .env files (if provided)
+  - Task to deploy with docker compose
+- [ ]  Role: `roles/docker-cleanup/` (shared cleanup component)
+  - Task to prune unused images
+  - Task to prune stopped containers
+  - Configurable cleanup scope (light/standard/deep)
+  - Can be invoked post-deployment or per-service
 
 **Key features:**
 
-yaml
-
-- `Dynamic service discovery from services/ directory
-- Copy docker-compose.yml to /opt/{service}/
-- Copy config directories if they exist
+- Dynamic service discovery from services/ directory
+- Copy docker-compose.yml to /opt/services/{service}/
+- Copy config directories if they exist (non-sensitive configs only)
 - Handle .env files:
-  - Services should include `.env.example` files in repo (with placeholder values)
-  - Actual `.env` files with secrets managed via:
-    - Ansible vault for encrypted .env templates
+  - Services include `.env.example` files in repo (with placeholder values)
+  - Actual .env files provided via `docker_service_env_files` variable
+  - Store in `group_vars/all/vault.yml` (encrypted with ansible-vault)
+  - **All .env operations use `no_log: true` to prevent secret exposure**
+  - .env files never committed to repository
 - Run docker compose up -d
 - Handle service restarts on changes
-- Cleanup old images/containers
+- Invoke shared cleanup role after successful deployment
+
+**Secret Management (Keep it Simple):**
+
+Create one encrypted file with all service secrets:
+```yaml
+# group_vars/all/vault.yml (encrypt with: ansible-vault encrypt vault.yml)
+docker_service_env_files:
+  service-name: |
+    SECRET_KEY=actual_value
+    API_TOKEN=xyz123
 ```
+
+**Important:** All tasks that handle .env content must use `no_log: true` to prevent secrets from appearing in Ansible output.
+
+Edit with: `ansible-vault edit group_vars/all/vault.yml`
+Deploy with: `ansible-playbook deploy-services.yml --ask-vault-pass`
+
+**Cleanup Role Design:**
+
+The `docker-cleanup` role should be:
+- **Independent and reusable** - can be called from any playbook
+- **Configurable scope** via `cleanup_level` variable:
+  - `light`: Prune dangling images only
+  - `standard`: Prune unused images (default)
+  - `deep`: Prune images, volumes, networks, build cache
+- **Safe by default** - never removes running containers or active volumes
+- Called after all services deployed in `deploy-services.yml` playbook
+
 **Acceptance Criteria:**
+
 - Playbook discovers services automatically
 - Only changed services restart
 - Config files copied correctly (non-sensitive)
-- .env handling strategy documented and implemented
+- .env files deployed from vault when provided
+- **All .env operations use `no_log: true` - verified in output**
 - Secrets never exposed in logs or repository
-- Clear error messages if required secrets/env files missing
+- Clear error messages if required .env files missing
 - Proper error handling for failed deployments
-- Cleanup runs after successful deployment
----
-
-services/
-├── service-name/
-│   ├── docker-compose.yml
-│   ├── .env.example (template with placeholders)
-│   ├── config/ (non-sensitive configs only)
-│   └── README.md (service-specific notes including secret requirements)
-
-**For each service:**
-
-- [ ]  Compose file validated (`docker compose config`)
-- [ ]  Volume paths use relative or configurable paths
-- [ ]  Networks defined if inter-service communication needed
-- [ ]  Environment variables documented in README.md
-- [ ]  `.env.example` created with all required variables (placeholder values)
-- [ ]  Actual `.env` excluded from git (verify .gitignore)
-- [ ]  Secrets handling documented (what needs vault/manual setup)
-
-
-**Acceptance Criteria:**
-
-- All services have valid compose files
-- No hardcoded host-specific paths
-- All services documented
-- Test deployment on staging
+- **Shared `docker-cleanup` role invoked after successful deployment**
+- **Cleanup role has configurable scope (light/standard/deep)**
+- Cleanup doesn't remove active containers or volumes
 
 **Reviewer Focus:**
 
-- Compose files follow consistent structure
-- No exposed secrets in compose files
-- Proper use of networks and volumes
-- Resource limits defined where appropriate
+- Use of `docker_compose_v2` module (or `docker compose` command)
+- Proper file permissions set (especially for .env files - mode 0640)
+- Changed detection works correctly
+- **`no_log: true` present on all .env-related tasks**
+- No secrets in playbook output or logs
+- .env file handling is secure
+- **`docker-cleanup` role exists as separate, reusable component**
+- **Cleanup role properly parameterized (cleanup_level variable)**
+- **Playbook invokes cleanup role after service deployment**
+- Rollback strategy for failures
+
+**Example Playbook Structure:**
+```yaml
+---
+- name: Deploy Docker services
+  hosts: docker_hosts
+  roles:
+    - role: docker-service
+      vars:
+        docker_service_targets: []  # Empty = deploy all
+
+- name: Cleanup Docker resources
+  hosts: docker_hosts
+  roles:
+    - role: docker-cleanup
+      vars:
+        cleanup_level: standard  # light/standard/deep
+```
+
+---
 
 ---
 

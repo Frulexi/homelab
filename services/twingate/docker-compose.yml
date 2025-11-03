@@ -1,0 +1,12 @@
+services:
+  twingate-connector:
+    image: twingate/connector:latest
+    env_file:
+      - .env
+    container_name: twingate-connector
+    network_mode: "host"
+    restart: unless-stopped
+    pull_policy: always
+    labels:
+      com.homelab.service: "twingate-connector"
+      com.homelab.maintainer: "homelab"
