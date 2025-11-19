@@ -17,7 +17,7 @@
 /* Loki Write Endpoint */
 loki.write "default" {
   endpoint {
-    url = "{{ logs_loki_url }}"
+    url = "http://loki:3100/loki/api/v1/push"
   }
   external_labels = {}
 }
@@ -27,7 +27,7 @@ loki.write "default" {
 /* Prometheus Remote Write Endpoint */
 prometheus.remote_write "default" {
   endpoint {
-    url = "{{ metrics_prometheus_url }}"
+    url = "http://prometheus:9090/api/v1/write"
   }
 }
 
