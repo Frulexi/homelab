@@ -9,7 +9,7 @@ services:
         - ./config/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
       restart: unless-stopped
       networks:
-        - unifi-network
+        - unifi_network
       labels:
         com.homelab.service: "unifi-db"
         com.homelab.maintainer: "homelab"
@@ -21,25 +21,36 @@ services:
         - .env
       volumes:
         - ./unifi-network-application/data:/config
-      ports:
-        - 8443:8443
-        - 3478:3478/udp
-        - 10001:10001/udp
-        - 8080:8080
-        - 1900:1900/udp #optional
-        - 8843:8843 #optional
-        - 8880:8880 #optional
-        - 6789:6789 #optional
-        - 5514:5514/udp #optional
+      ports: #need to network host mode to get proper device discovery working
+        - 8443:8443 #dashboard
+        - 3478:3478/udp #STUN Service (Session Traversal Utilities for NAT)
+        - 8080:8080 #device com port
+        - 5514:5514/udp #Remote Syslog
+        - 10001:10001/udp # device discovery
+        - 1900:1900/udp #allows the Controller to discover UniFi devices automatically
       restart: unless-stopped
       networks:
-        - unifi-network
+        - unifi_network
+        - traefik_network
       labels:
         com.homelab.service: "unifi-network-application"
         com.homelab.maintainer: "homelab"
 
+        traefik.enable: "true"
+        traefik.http.routers.unifi.tls: "true"
+        traefik.http.routers.unifi.entrypoints: "websecure"
+        traefik.http.routers.unifi.tls.certresolver: "cloudflare"
+        traefik.http.routers.unifi.rule: "Host(`unifi.homedev.landingsnet.com`)"
+        traefik.http.services.unifi.loadbalancer.server.port: "8443"
+        traefik.http.services.unifi.loadbalancer.server.scheme: "https"
+        traefik.http.services.unifi.loadbalancer.serverstransport: "ignorecert@file"
+
 networks:
-    unifi-network:
+  unifi_network:
+    external: true
+
+  traefik_network:
+    external: true
 
 
 

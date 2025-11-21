@@ -35,3 +35,13 @@ docker_daemon_config:
   log-opts:
     max-size: "10m"
     max-file: "5"
+
+# Managed Docker networks shared between compose projects. Extend this list
+# when new services introduce cross-stack networks so Ansible can guarantee
+# their existence before deployments run.
+docker_service_networks:
+  - traefik_network
+  - monitoring_network
+  - n8n_network
+  - portainer_network
+  - unifi_network
