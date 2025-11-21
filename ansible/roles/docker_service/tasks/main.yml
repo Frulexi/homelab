@@ -187,6 +187,18 @@
     group: "{{ docker_service_group }}"
     mode: "{{ docker_service_directory_mode }}"
 
+- name: Ensure shared docker networks exist
+  community.docker.docker_network:
+    name: "{{ docker_service_network_spec.name }}"
+    driver: "{{ docker_service_network_spec.driver | default(docker_service_network_default_driver) }}"
+    state: present
+  loop: "{{ docker_service_networks }}"
+  loop_control:
+    label: "{{ docker_service_network_spec.name }}"
+  vars:
+    docker_service_network_spec: "{{ item if (item is mapping) else {'name': item} }}"
+  when: docker_service_networks | length > 0
+
 - name: Deploy docker services
   ansible.builtin.include_tasks: service.yml
   loop: "{{ docker_service_selected_meta }}"

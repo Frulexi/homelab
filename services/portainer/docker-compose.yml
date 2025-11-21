@@ -9,10 +9,16 @@ services:
     ports:
       - 9443:9443
     networks:
-      - portainer
+      - portainer_network
+      - traefik_network
     labels:
       com.homelab.service: "portainer"
       com.homelab.maintainer: "homelab"
+      traefik.enable: "true"
+      traefik.http.routers.portainer.entrypoints: "websecure"
+      traefik.http.routers.portainer.tls.certresolver: "cloudflare"
+      traefik.http.routers.portainer.rule: "Host(`portainer.homedev.landingsnet.com`)"
+      traefik.http.services.portainer.loadbalancer.server.port: "9000"
 
 volumes:
   portainer_data:
@@ -20,4 +26,7 @@ volumes:
 
 
 networks:
-  portainer:
+  portainer_network:
+    external: true
+  traefik_network:
+    external: true

@@ -5,21 +5,34 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    ports:
-      - "5678:5678"
     volumes:
       - n8n_data:/home/node/.n8n
     networks:
-      - n8n
+      - n8n_network
+      - traefik_network
     labels:
       com.homelab.service: "n8n"
       com.homelab.maintainer: "homelab"
+
+      # Turns on Traefik for this specific container
+      traefik.enable: "true"
+      #Entrypoint for secure traffic
+      traefik.http.routers.n8n.entrypoints: "websecure"
+      #Use Cloudflare resolver to manage TLS certificates
+      traefik.http.routers.n8n.tls.certresolver: "cloudflare"
+      #Domain routing rule
+      traefik.http.routers.n8n.rule: "Host(`n8n.homedev.landingsnet.com`)"
+      #Internal port where service is listening
+      traefik.http.services.n8n.loadbalancer.server.port: "5678"
 
 volumes:
   n8n_data:
     name: n8n_data
 
 networks:
-  n8n:
+  n8n_network:
+    external: true
+  traefik_network:
+    external: true
 
 

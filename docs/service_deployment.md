@@ -6,6 +6,7 @@ The `ansible/playbooks/deploy-services.yml` playbook rolls out all Docker Compos
 
 - Discovers every service directory under `services/` that contains a `docker-compose.yml`.
 - Copies compose files and optional `config/` subdirectories to the managed hosts under `/opt/homelab/services/<service>/`.
+- Ensures shared Docker networks declared in inventory/group vars exist *before* any compose project runs, so `external: true` networks never fail due to ordering.
 - Renders managed `.env` files from secrets stored in the Ansible vault, keeping secret data out of logs with `no_log: true`.
 - Validates each compose project with `docker compose config` before starting containers.
 - Restarts only the services whose compose files, configs, or secrets changed (unless `docker_service_force_recreate` overrides).
@@ -17,6 +18,8 @@ The `ansible/playbooks/deploy-services.yml` playbook rolls out all Docker Compos
 | --- | --- | --- |
 | `docker_service_targets` | Limit deployment to specific services; empty = all discovered services. | `[]` |
 | `docker_service_dest_root` | Base directory for deployed service artifacts. | `/opt/homelab/services` |
+| `docker_service_networks` | List of shared Docker networks to create ahead of deployments (string names or dicts with attributes). | `[]` |
+| `docker_service_network_default_driver` | Driver applied when a declared network does not specify one. | `bridge` |
 | `docker_service_env_files` | Mapping of service names to managed `.env` content (populate via vault). | `{}` |
 | `docker_service_required_env` | List of services that must have entries in `docker_service_env_files`. | `[]` |
 | `docker_service_force_recreate` | Force `docker compose up --force-recreate` on every run. | `false` |
@@ -25,6 +28,21 @@ The `ansible/playbooks/deploy-services.yml` playbook rolls out all Docker Compos
 | `docker_service_cleanup_level` | Cleanup intensity: `light`, `standard`, `deep`. | `standard` |
 
 Override these per environment under `ansible/inventory/<env>/group_vars/` as needed. Service secrets belong in `ansible/inventory/<env>/group_vars/all/vault.yml` under `docker_service_env_files`.
+
+## Shared Docker networks
+
+Many services in `services/` join common networks (for example `traefik_network`, `monitoring_network`, or `unifi-network`). Declare those networks under `docker_service_networks` so the `docker_service` role guarantees their existence before it executes any `docker compose up`. Each entry can be a simple string or a dictionary with driver overrides:
+
+```yaml
+# ansible/group_vars/all.yml (excerpt)
+docker_service_networks:
+  - traefik_network
+  - n8n_network
+  - name: monitoring_network
+    driver: bridge
+```
+
+Add or remove entries per environment in inventory group vars. Because the role converges networks first, you can safely mark them as `external: true` inside compose files without worrying about execution order.
 
 ## Secrets and `.env` handling
 

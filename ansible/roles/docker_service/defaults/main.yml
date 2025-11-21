@@ -11,6 +11,8 @@ docker_service_env_mode: "0640"
 docker_service_targets: []
 docker_service_env_files: {}
 docker_service_required_env: []
+docker_service_networks: []
+docker_service_network_default_driver: bridge
 docker_service_force_recreate: false
 docker_service_always_run: false
 docker_service_project_prefix: ""

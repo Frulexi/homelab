@@ -1,0 +1,50 @@
+global:
+# Disables sending anonymous usage data to Traefik Labs.
+  sendAnonymousUsage: false
+log:
+  level: DEBUG
+
+api:
+  dashboard: true
+# 'insecure: true' enables the dashboard on port 8080 without a password.
+  insecure: true 
+
+entryPoints:
+  web:
+    address: ":80"
+# GLOBAL REDIRECT: Automatically forces all HTTP traffic to HTTPS
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    # Connects to the local Docker socket to listen for container events
+    endpoint: "unix:///var/run/docker.sock"
+    # SAFETY: 'false' means containers are ignored by default.
+    # You must add label "traefik.enable=true" to specific containers to expose them.
+    exposedByDefault: false
+  file:
+      filename: "/etc/traefik/dynamic.yml" # Points to your dynamic config
+      watch: true
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: frulexi@icloud.com
+      # Where to save the certificates.
+      storage: /var/certs/acme.json
+      # Use Elliptic Curve cryptography (faster/modern) instead of RSA
+      keyType: EC256
+      # The Let's Encrypt production server
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      dnsChallenge:
+        provider: cloudflare
+        # Hardcoded DNS resolvers ensure Traefik can talk to Cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"

@@ -1,0 +1,41 @@
+services:
+  traefik:
+    image: traefik:v3.6.2
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8081:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/certs:/var/certs
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./config/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    restart: unless-stopped
+    labels:
+      com.homelab.service: "traefik"
+      com.homelab.maintainer: "homelab"
+    networks:
+      - traefik_network
+      - n8n_network
+      - portainer_network
+      - unifi_network
+      - monitoring_network
+
+networks:
+  traefik_network:
+    external: true  
+  n8n_network:
+    external: true
+  portainer_network:
+    external: true
+  unifi_network:
+    external: true
+  monitoring_network:
+    external: true
+
+
+
+

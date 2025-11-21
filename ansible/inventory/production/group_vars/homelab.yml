@@ -1,5 +1,5 @@
 ---
-# Security hardening settings for homelab group
+# security defaults. Override per-environment or host as needed.
 security_ssh_port: 1022
 security_ssh_permit_root_login: "no"
 security_ssh_password_authentication: "no"
@@ -22,3 +22,27 @@ security_disable_services: []
 security_syslog_remote_host: ""
 security_syslog_remote_port: 514
 security_syslog_protocol: udp
+
+# Docker defaults. Adjust per environment as needed.
+docker_users: []
+docker_directories:
+  - path: /opt/docker
+    owner: root
+    group: docker
+    mode: "0755"
+docker_daemon_config:
+  log-driver: json-file
+  log-opts:
+    max-size: "10m"
+    max-file: "5"
+
+# Managed Docker networks shared between compose projects. Extend this list
+# when new services introduce cross-stack networks so Ansible can guarantee
+# their existence before deployments run.
+docker_service_networks:
+  - traefik_network
+  - monitoring_network
+  - n8n_network
+  - portainer_network
+  - unifi_network
+
