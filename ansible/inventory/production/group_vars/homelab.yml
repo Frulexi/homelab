@@ -49,3 +49,4 @@ docker_service_networks:
   - portainer_network
   - unifi_network
   - authentik_network
+  - actualbudget_network
