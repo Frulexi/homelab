@@ -34,6 +34,9 @@ services:
     image: grafana/grafana-oss:main
     container_name: grafana
     restart: unless-stopped
+    environment:
+      - GF_SERVER_ROOT_URL=https://grafana.homedev.landingsnet.com
+      - GF_SERVER_DOMAIN=grafana.homedev.landingsnet.com
     volumes:
       - grafana-data:/var/lib/grafana
       - ./config/provisioning:/etc/grafana/provisioning

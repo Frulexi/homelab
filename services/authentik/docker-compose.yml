@@ -1,0 +1,83 @@
+services:
+  postgresql:
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+    healthcheck:
+      interval: 30s
+      retries: 5
+      start_period: 20s
+      test:
+      - CMD-SHELL
+      - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+      timeout: 5s
+    image: docker.io/library/postgres:16-alpine
+    container_name: authentik-postgresql
+    restart: unless-stopped
+    volumes:
+    - database:/var/lib/postgresql/data
+    networks:
+      - authentik_network 
+  server:
+    command: server
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__NAME: ${POSTGRES_DB}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${POSTGRES_PASSWORD}
+      AUTHENTIK_POSTGRESQL__USER: ${POSTGRES_USER}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
+    image: ghcr.io/goauthentik/server:2025.10.2
+    container_name: authentik-server
+    labels:
+      com.homelab.service: "authentik-server"
+      com.homelab.maintainer: "homelab"
+      traefik.enable: "true"
+      traefik.http.routers.authentik.entrypoints: "websecure"
+      traefik.http.routers.authentik.tls.certresolver: "cloudflare"
+      traefik.http.routers.authentik.rule: "Host(`authentik.homedev.landingsnet.com`)"
+      traefik.http.services.authentik.loadbalancer.server.port: "9000"
+    restart: unless-stopped
+    volumes:
+    - ./media:/media
+    - ./custom-templates:/templates
+    networks:
+      - authentik_network 
+      - traefik_network
+  worker:
+    command: worker
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__NAME: ${POSTGRES_DB}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${POSTGRES_PASSWORD}
+      AUTHENTIK_POSTGRESQL__USER: ${POSTGRES_USER}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+    image: ghcr.io/goauthentik/server:2025.10.2
+    container_name: authentik-worker
+    restart: unless-stopped
+    user: root
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./media:/media
+    - ./certs:/certs
+    - ./custom-templates:/templates
+    networks:
+      - authentik_network
+
+volumes:
+  database:
+    driver: local
+
+networks:
+  authentik_network:
+    external: true  
+  traefik_network:
+    external: true
+
