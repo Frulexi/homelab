@@ -35,6 +35,9 @@ docker_daemon_config:
   log-opts:
     max-size: "10m"
     max-file: "5"
+  dns:
+    - 8.8.8.8
+    - 1.1.1.1
 
 # Managed Docker networks shared between compose projects. Extend this list
 # when new services introduce cross-stack networks so Ansible can guarantee
@@ -45,4 +48,4 @@ docker_service_networks:
   - n8n_network
   - portainer_network
   - unifi_network
-
+  - authentik_network

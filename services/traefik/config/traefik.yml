@@ -2,7 +2,7 @@ global:
 # Disables sending anonymous usage data to Traefik Labs.
   sendAnonymousUsage: false
 log:
-  level: DEBUG
+  level: INFO
 
 api:
   dashboard: true

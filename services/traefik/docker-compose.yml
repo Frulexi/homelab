@@ -23,6 +23,7 @@ services:
       - portainer_network
       - unifi_network
       - monitoring_network
+      - authentik_network
 
 networks:
   traefik_network:
@@ -34,6 +35,8 @@ networks:
   unifi_network:
     external: true
   monitoring_network:
+    external: true
+  authentik_network:
     external: true
 
 
