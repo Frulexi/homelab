@@ -1,0 +1,6 @@
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.23.0.0/16  # Traefik Docker network
+homeassistant:
+  external_url: "https://hs.homedev.landingsnet.com"
