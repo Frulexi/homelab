@@ -10,7 +10,6 @@ services:
       traefik.http.routers.actualbudget.tls.certresolver: "cloudflare"
       traefik.http.routers.actualbudget.rule: "Host(`actualbudget.homedev.landingsnet.com`)"
       traefik.http.services.actualbudget.loadbalancer.server.port: "5006"
-      traefik.docker.network: "traefik_network"
     env_file:
       - .env
     volumes:

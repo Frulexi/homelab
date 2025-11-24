@@ -164,12 +164,4 @@ prometheus.scrape "metrics" {
 
 
 
-// ============================================================================
-// NO COLLECTION ENABLED
-// ============================================================================
-// 
-// No log or metrics collection is currently enabled.
-// To enable collection, set logs_enabled or metrics_enabled to true when
-// generating this template.
-//
-// For more information, visit: https://grafana.com/docs/alloy/latest/
+

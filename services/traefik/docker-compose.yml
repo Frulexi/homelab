@@ -17,6 +17,8 @@ services:
     labels:
       com.homelab.service: "traefik"
       com.homelab.maintainer: "homelab"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - traefik_network
       - n8n_network
@@ -24,6 +26,8 @@ services:
       - unifi_network
       - monitoring_network
       - authentik_network
+      - actualbudget_network
+
 
 networks:
   traefik_network:
@@ -37,6 +41,8 @@ networks:
   monitoring_network:
     external: true
   authentik_network:
+    external: true
+  actualbudget_network:
     external: true
 
 

@@ -1,0 +1,22 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    labels:
+      com.homelab.service: "homeassistant"
+      com.homelab.maintainer: "homelab"
+      traefik.enable: "true"
+      traefik.http.routers.homeassistant.rule: "Host(`homeassistant.homedev.landingsnet.com`)"
+      traefik.http.routers.homeassistant.entrypoints: "websecure"
+      traefik.http.routers.homeassistant.tls.certresolver: "cloudflare"
+      traefik.http.services.homeassistant.loadbalancer.server.url: "http://host.docker.internal:8123"
+
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      TZ: America/New_York
