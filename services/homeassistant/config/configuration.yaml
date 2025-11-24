@@ -1,6 +1,18 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+homeassistant:
+  external_url: "https://homeassistant.homedev.landingsnet.com"
+
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 172.23.0.0/16  # Traefik Docker network
-homeassistant:
-  external_url: "https://hs.homedev.landingsnet.com"
+    - 172.16.0.0/12
