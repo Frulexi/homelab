@@ -1,6 +1,6 @@
 services:
   apple-trans:
-    image: gcr.io/ideas-439121/apple-trans-to-csv
+    image: apple-trans:01
     container_name: apple-trans
     networks:
       - apple-trans_netwok
