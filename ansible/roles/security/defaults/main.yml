@@ -10,7 +10,14 @@ security_ssh_banner: false
 security_firewall_enabled: true
 security_firewall_allowed_tcp_ports:
   - "{{ security_ssh_port }}"
-security_firewall_allowed_udp_ports: []
+  - "8080"  # Unifi
+  - "8443"  # Unifi
+  - "21064" # Home Assistant
+security_firewall_allowed_udp_ports:
+  - "3478"   # Unifi
+  - "10001"  # Unifi
+  - "5514"   # Unifi
+  - "1900"   # Unifi
 
 # Fail2ban configuration
 security_fail2ban_enabled: true

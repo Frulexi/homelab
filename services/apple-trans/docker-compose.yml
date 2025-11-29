@@ -1,0 +1,40 @@
+services:
+  apple-trans:
+    image: apple-trans:01
+    container_name: apple-trans
+    networks:
+      - apple-trans_network
+      - traefik_network
+    labels:
+      com.homelab.service: "apple-trans"
+      com.homelab.maintainer: "homelab"
+
+      traefik.enable: "true"
+      traefik.docker.allownonrunning: "true"
+      traefik.http.routers.apple-trans.entrypoints: "websecure"
+      traefik.http.routers.apple-trans.tls.certresolver: "cloudflare"
+      traefik.http.routers.apple-trans.rule: "Host(`apple-trans.homedev.landingsnet.com`)"
+      traefik.http.services.apple-trans.loadbalancer.server.port: "8080"
+
+      # Define the middleware using the PLUGIN syntax
+      traefik.http.middlewares.my-sablier.plugin.sablier.group: "apple-trans"
+      traefik.http.middlewares.my-sablier.plugin.sablier.sablierUrl: "http://sablier:10000"
+      traefik.http.middlewares.my-sablier.plugin.sablier.dynamic.displayName: "appleTrans Service"
+      traefik.http.middlewares.my-sablier.plugin.sablier.sessionDuration: "1m"
+      # Optional: Add the Loading Screen Theme
+      traefik.http.middlewares.my-sablier.plugin.sablier.dynamic.theme: "hacker-terminal"
+      traefik.http.middlewares.my-sablier.plugin.sablier.dynamic.refreshFrequency: "5s"
+
+      # Apply it
+      traefik.http.routers.apple-trans.middlewares: "my-sablier@docker"
+
+      # Sablier Brain labels
+      sablier.enable: "true"
+      sablier.group: "apple-trans"
+
+networks:
+  apple-trans_network:
+    external: true
+  traefik_network:
+    external: true
+
