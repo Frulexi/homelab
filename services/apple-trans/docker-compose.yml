@@ -3,7 +3,7 @@ services:
     image: apple-trans:01
     container_name: apple-trans
     networks:
-      - apple-trans_netwok
+      - apple-trans_network
       - traefik_network
     labels:
       com.homelab.service: "apple-trans"
@@ -33,7 +33,7 @@ services:
       sablier.group: "apple-trans"
 
 networks:
-  apple-trans_netwok:
+  apple-trans_network:
     external: true
   traefik_network:
     external: true

@@ -27,7 +27,7 @@ services:
       - monitoring_network
       - authentik_network
       - actualbudget_network
-      - apple-trans_netwok
+      - apple-trans_network
   
   sablier:
     image: sablierapp/sablier:1.10.5
@@ -35,9 +35,9 @@ services:
     restart: unless-stopped
     networks:
       - traefik_network
-      - apple-trans_netwok
+      - apple-trans_network
     command:
-      - start 
+      - start
       - "--provider.name=docker" # Tell Sablier to watch Docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Needs access to START/STOP containers
@@ -63,7 +63,7 @@ networks:
     external: true
   actualbudget_network:
     external: true
-  apple-trans_netwok:
+  apple-trans_network:
     external: true
 
 

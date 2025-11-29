@@ -50,5 +50,5 @@ docker_service_networks:
   - unifi_network
   - authentik_network
   - actualbudget_network
-  - apple-trans_netwok
+  - apple-trans_network
 
