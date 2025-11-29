@@ -32,6 +32,12 @@ providers:
       filename: "/etc/traefik/dynamic.yml" # Points to your dynamic config
       watch: true
 
+experimental:
+  plugins:
+    sablier:
+      moduleName: "github.com/acouvreur/sablier"
+      version: "v1.8.0"
+
 certificatesResolvers:
   cloudflare:
     acme:
@@ -48,3 +54,4 @@ certificatesResolvers:
         resolvers:
           - "1.1.1.1:53"
           - "8.8.8.8:53"
+

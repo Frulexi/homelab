@@ -43,7 +43,7 @@
 
 - name: Prune dangling/unused images
   ansible.builtin.command:
-    argv: "{{ [docker_cleanup_docker_binary, 'image', 'prune', '-a', '-f'] + docker_cleanup_image_filter_args }}"
+    argv: "{{ [docker_cleanup_docker_binary, 'image', 'prune', '-a'] + docker_cleanup_image_filter_args }}"
   register: docker_cleanup_images
   changed_when: "'Total reclaimed space: 0B' not in docker_cleanup_images.stdout"
   when: docker_cleanup_plan.prune_images

@@ -27,6 +27,25 @@ services:
       - monitoring_network
       - authentik_network
       - actualbudget_network
+      - apple-trans_netwok
+  
+  sablier:
+    image: sablierapp/sablier:1.10.5
+    container_name: sablier
+    restart: unless-stopped
+    networks:
+      - traefik_network
+      - apple-trans_netwok
+    command:
+      - start 
+      - "--provider.name=docker" # Tell Sablier to watch Docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Needs access to START/STOP containers
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.sablier.loadbalancer.server.port: "10000"
+      traefik.http.routers.sablier.rule: "Host(`sablier.homedev.landingsnet.com`)" # Sablier API access (optional)
+      
 
 
 networks:
@@ -43,6 +62,8 @@ networks:
   authentik_network:
     external: true
   actualbudget_network:
+    external: true
+  apple-trans_netwok:
     external: true
 
 
