@@ -20,3 +20,27 @@ services:
     network_mode: host
     environment:
       TZ: America/New_York
+
+
+  esphome:
+    container_name: esphome
+    image: ghcr.io/esphome/esphome:2025.11
+    volumes:
+      - ./config/esphome:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    privileged: true
+    network_mode: host
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    labels:
+      com.homelab.service: "esphome"
+      com.homelab.maintainer: "homelab"
+      traefik.enable: "true"
+      traefik.http.routers.esphome.rule: "Host(`esphome.homedev.landingsnet.com`)"
+      traefik.http.routers.esphome.entrypoints: "websecure"
+      traefik.http.routers.esphome.tls.certresolver: "cloudflare"
+      traefik.http.services.esphome.loadbalancer.server.url: "http://host.docker.internal:6052"
+    env_file:
+      - .env
+      
