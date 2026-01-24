@@ -1,0 +1,15 @@
+services:
+  minecraft:
+    container_name: minecraft-bedrock
+    image: itzg/minecraft-bedrock-server  # The Docker image for the Bedrock server
+    volumes:
+      - ./data:/data  # Persistent volume for server 
+    stdin_open: true  # Keep STDIN open
+    tty: false  # Allocate a pseudo-TTY
+    ports:
+      - "19132:19132/udp"  # Expose the default Bedrock server port
+    environment:
+      EULA: "TRUE"  # Accept the End User License Agreement
+      GAMEMODE: survival  # Set game mode to survival
+      DIFFICULTY: hard  # Set difficulty level to hard
+    restart: unless-stopped  # Restart policy for the container
