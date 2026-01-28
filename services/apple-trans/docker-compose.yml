@@ -1,6 +1,6 @@
 services:
   apple-trans:
-    image: apple-trans:01
+    image: apple-trans:02
     container_name: apple-trans
     networks:
       - apple-trans_network

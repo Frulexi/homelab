@@ -17,4 +17,5 @@ logs/
 tmp/
 secrets/
 .idea/
-.vscode/
+.vscode
+ansible/inventory/production/group_vars/all/vault.yml
