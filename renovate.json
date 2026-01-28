@@ -1,0 +1,75 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:enableMajor",
+    ":dependencyDashboard"
+  ],
+
+  "timezone": "America/New_York",
+  "schedule": ["after 9am and before 5pm every weekend"],
+
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2,
+
+  "automerge": false,
+  "labels": ["dependencies", "renovate"],
+
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dependency Dashboard",
+
+  "packageRules": [
+    {
+      "description": "EXCLUDE: Local custom image",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["^apple-trans$"],
+      "enabled": false
+    },
+    {
+      "description": "EXCLUDE: Twingate for stability",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["twingate/connector"],
+      "enabled": false
+    },
+    {
+      "description": "GROUP: Grafana monitoring stack",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["^grafana/"],
+      "groupName": "Grafana Stack"
+    },
+    {
+      "description": "GROUP: Authentik identity services",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["goauthentik/"],
+      "groupName": "Authentik"
+    },
+    {
+      "description": "GROUP: Home automation",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["home-assistant/", "esphome/"],
+      "groupName": "Home Automation"
+    },
+    {
+      "description": "GROUP: Traefik proxy stack",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["^traefik$", "^sablierapp/"],
+      "groupName": "Traefik Proxy"
+    },
+    {
+      "description": "Actualbudget uses :latest (no semver tags available) - pin digest",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["actualbudget/actual-server"],
+      "pinDigests": true
+    },
+    {
+      "description": "Database images require manual review",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["postgres", "mongo", "mysql", "redis"],
+      "labels": ["dependencies", "database", "requires-review"]
+    }
+  ],
+
+  "docker-compose": {
+    "fileMatch": ["services/.+/docker-compose\\.ya?ml$"]
+  }
+}
