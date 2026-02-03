@@ -2,3 +2,32 @@ http:
   serversTransports:
     ignorecert:
       insecureSkipVerify: true
+
+  routers:
+    apple-trans:
+      rule: "Host(`apple-trans.homedev.landingsnet.com`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - sablier-apple-trans
+      service: apple-trans
+
+  middlewares:
+    sablier-apple-trans:
+      plugin:
+        sablier:
+          group: apple-trans
+          sablierUrl: http://sablier:10000
+          sessionDuration: 5m
+          dynamic:
+            displayName: "appleTrans Service"
+            theme: hacker-terminal
+            refreshFrequency: 5s
+
+  services:
+    apple-trans:
+      loadBalancer:
+        servers:
+          - url: "http://apple-trans:8080"

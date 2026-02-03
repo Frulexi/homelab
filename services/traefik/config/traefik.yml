@@ -28,6 +28,8 @@ providers:
     # SAFETY: 'false' means containers are ignored by default.
     # You must add label "traefik.enable=true" to specific containers to expose them.
     exposedByDefault: false
+    # Required for Sablier: allows routing to stopped containers
+    allowEmptyServices: true
   file:
       filename: "/etc/traefik/dynamic.yml" # Points to your dynamic config
       watch: true
@@ -41,7 +43,7 @@ experimental:
 certificatesResolvers:
   cloudflare:
     acme:
-      email: frulexi@icloud.com
+      email: frolexi@icloud.com
       # Where to save the certificates.
       storage: /var/certs/acme.json
       # Use Elliptic Curve cryptography (faster/modern) instead of RSA
