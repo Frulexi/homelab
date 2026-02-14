@@ -1,0 +1,78 @@
+services:
+  app:
+    image: invoiceninja/invoiceninja-debian:5
+    container_name: invoiceninja-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - public:/var/www/html/public
+      - storage:/var/www/html/storage
+    networks:
+      - invoiceninja_network
+    labels:
+      com.homelab.service: "invoiceninja"
+      com.homelab.maintainer: "homelab"
+
+  server:
+    image: nginx:alpine
+    container_name: invoiceninja-server
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - ./config/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf:ro
+      - /dev/null:/etc/nginx/conf.d/default.conf:ro
+      - public:/var/www/html/public:ro
+      - storage:/var/www/html/storage:ro
+    networks:
+      - invoiceninja_network
+      - traefik_network
+    labels:
+      com.homelab.service: "invoiceninja-server"
+      com.homelab.maintainer: "homelab"
+
+      traefik.docker.network: "traefik_network"
+      traefik.enable: "true"
+      traefik.http.routers.invoiceninja.entrypoints: "websecure"
+      traefik.http.routers.invoiceninja.tls.certresolver: "cloudflare"
+      traefik.http.routers.invoiceninja.rule: "Host(`invoice.homedev.landingsnet.com`)"
+      traefik.http.services.invoiceninja.loadbalancer.server.port: "80"
+
+      traefik.http.routers.invoiceninja.middlewares: "invoiceninja-headers"
+      traefik.http.middlewares.invoiceninja-headers.headers.customrequestheaders.X-Forwarded-Proto: "https"
+      traefik.http.middlewares.invoiceninja-headers.headers.customrequestheaders.X-Forwarded-Host: "invoice.homedev.landingsnet.com"
+
+  db:
+    image: mariadb:11.4
+    container_name: invoiceninja-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - invoiceninja_network
+
+volumes:
+  db_data:
+  public:
+  storage:
+
+networks:
+  invoiceninja_network:
+    external: true
+  traefik_network:
+    external: true
