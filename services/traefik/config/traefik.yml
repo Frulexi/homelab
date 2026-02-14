@@ -21,6 +21,12 @@ entryPoints:
   websecure:
     address: ":443"
 
+serversTransport:
+  forwardingTimeouts:
+    dialTimeout: "30s"
+    responseHeaderTimeout: "30s"
+    idleConnTimeout: "90s"
+
 providers:
   docker:
     # Connects to the local Docker socket to listen for container events
@@ -37,8 +43,8 @@ providers:
 experimental:
   plugins:
     sablier:
-      moduleName: "github.com/acouvreur/sablier"
-      version: "v1.8.0"
+      moduleName: "github.com/sablierapp/sablier/plugins/traefik"
+      version: "v1.10.1"
 
 certificatesResolvers:
   cloudflare:

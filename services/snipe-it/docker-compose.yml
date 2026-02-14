@@ -1,0 +1,62 @@
+services:
+  app:
+    image: snipe/snipe-it:latest
+    container_name: snipe-it
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - storage:/var/lib/snipeit
+    networks:
+      - snipe-it_network
+      - traefik_network
+    labels:
+      com.homelab.service: "snipe-it"
+      com.homelab.maintainer: "homelab"
+
+      traefik.docker.network: "traefik_network"
+      traefik.enable: "true"
+      traefik.http.routers.snipeit.entrypoints: "websecure"
+      traefik.http.routers.snipeit.tls.certresolver: "cloudflare"
+      traefik.http.routers.snipeit.rule: "Host(`snipeit.homedev.landingsnet.com`)"
+      traefik.http.services.snipeit.loadbalancer.server.port: "80"
+
+      traefik.http.routers.snipeit.middlewares: "snipeit-headers"
+      traefik.http.middlewares.snipeit-headers.headers.customrequestheaders.X-Forwarded-Proto: "https"
+      traefik.http.middlewares.snipeit-headers.headers.customrequestheaders.X-Forwarded-Host: "snipeit.homedev.landingsnet.com"
+
+      # Increase timeouts
+      traefik.http.services.snipeit.loadbalancer.passhostheader: "true"
+
+  db:
+    image: mariadb:11.4.7
+    container_name: snipe-it-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - snipe-it_network
+
+volumes:
+  db_data:
+  storage:
+
+networks:
+  snipe-it_network:
+    external: true
+  traefik_network:
+    external: true

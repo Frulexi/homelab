@@ -51,4 +51,10 @@ docker_service_networks:
   - authentik_network
   - actualbudget_network
   - apple-trans_network
+  - snipe-it_network
+
+# Services that must have matching entries in docker_service_env_files (vault).
+# Deployment will fail for these services if their .env content is missing.
+docker_service_required_env:
+  - snipe-it
 
