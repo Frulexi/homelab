@@ -52,5 +52,4 @@ docker_service_networks:
   - actualbudget_network
   - apple-trans_network
   - snipe-it_network
-  - invoiceninja_network
 
