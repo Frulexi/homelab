@@ -44,6 +44,11 @@ services:
         traefik.http.services.unifi.loadbalancer.server.port: "8443"
         traefik.http.services.unifi.loadbalancer.server.scheme: "https"
         traefik.http.services.unifi.loadbalancer.serverstransport: "ignorecert@file"
+        homepage.name: "UniFi"
+        homepage.description: "Ubiquiti network management"
+        homepage.icon: "unifi.png"
+        homepage.group: "Network"
+        homepage.href: "https://unifi.homedev.landingsnet.com"
 
 networks:
   unifi_network:

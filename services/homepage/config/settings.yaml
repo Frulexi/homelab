@@ -1,0 +1,32 @@
+title: Homelab
+theme: dark
+color: slate
+headerStyle: clean
+useEqualHeights: true
+statusStyle: "dot"
+
+layout:
+  Home:
+    style: row
+    columns: 2
+  Automation:
+    style: row
+    columns: 2
+  Monitoring:
+    style: row
+    columns: 3
+  Security:
+    style: row
+    columns: 2
+  Infrastructure:
+    style: row
+    columns: 2
+  Network:
+    style: row
+    columns: 2
+  Finance:
+    style: row
+    columns: 2
+  Apps:
+    style: row
+    columns: 2

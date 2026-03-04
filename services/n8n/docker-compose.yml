@@ -24,6 +24,11 @@ services:
       traefik.http.routers.n8n.rule: "Host(`n8n.homedev.landingsnet.com`)"
       #Internal port where service is listening
       traefik.http.services.n8n.loadbalancer.server.port: "5678"
+      homepage.name: "n8n"
+      homepage.description: "Workflow automation"
+      homepage.icon: "n8n.png"
+      homepage.group: "Automation"
+      homepage.href: "https://n8n.homedev.landingsnet.com"
 
 volumes:
   n8n_data:

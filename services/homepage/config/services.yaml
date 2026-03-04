@@ -1,0 +1,8 @@
+# Services are auto-discovered from Docker container labels.
+# Add homepage.* labels to a container's docker-compose.yml for it to appear here.
+# Required labels:
+#   homepage.name: "My Service"
+#   homepage.description: "Short description"
+#   homepage.icon: "icon.png"        # see https://github.com/walkxcode/dashboard-icons
+#   homepage.group: "Group Name"     # must match a group defined in settings.yaml
+#   homepage.href: "https://service.homedev.landingsnet.com"

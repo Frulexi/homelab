@@ -30,6 +30,11 @@ services:
 
       # Increase timeouts
       traefik.http.services.snipeit.loadbalancer.passhostheader: "true"
+      homepage.name: "Snipe-IT"
+      homepage.description: "IT asset management"
+      homepage.icon: "snipe-it.png"
+      homepage.group: "Infrastructure"
+      homepage.href: "https://snipeit.homedev.landingsnet.com"
 
   db:
     image: mariadb:11.4.7
