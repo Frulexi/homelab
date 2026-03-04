@@ -1,6 +1,6 @@
 services:
   alloy:
-    image: grafana/alloy:v1.12.2
+    image: grafana/alloy:v1.13.2
     container_name: alloy
     restart: unless-stopped
     hostname: owl_cloud_dev
@@ -31,7 +31,7 @@ services:
       - traefik_network
 
   grafana:
-    image: grafana/grafana-oss:12.3.2
+    image: grafana/grafana-oss:12.4.0
     container_name: grafana
     restart: unless-stopped
     environment:
@@ -53,7 +53,7 @@ services:
       - traefik_network
 
   loki:
-    image: grafana/loki:3.6.4
+    image: grafana/loki:3.6.7
     container_name: loki
     restart: unless-stopped
     ports:

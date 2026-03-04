@@ -1,6 +1,6 @@
 services:
   alloy:
-    image: grafana/alloy:v1.12.2
+    image: grafana/alloy:v1.13.2
     container_name: alloy
     restart: unless-stopped
     hostname: dev_host
