@@ -14,6 +14,11 @@ services:
       traefik.http.routers.homeassistant.entrypoints: "websecure"
       traefik.http.routers.homeassistant.tls.certresolver: "cloudflare"
       traefik.http.services.homeassistant.loadbalancer.server.url: "http://host.docker.internal:8123"
+      homepage.name: "Home Assistant"
+      homepage.description: "Home automation platform"
+      homepage.icon: "home-assistant.png"
+      homepage.group: "Home"
+      homepage.href: "https://homeassistant.homedev.landingsnet.com"
 
     restart: unless-stopped
     privileged: true
@@ -41,6 +46,11 @@ services:
       traefik.http.routers.esphome.entrypoints: "websecure"
       traefik.http.routers.esphome.tls.certresolver: "cloudflare"
       traefik.http.services.esphome.loadbalancer.server.url: "http://host.docker.internal:6052"
+      homepage.name: "ESPHome"
+      homepage.description: "ESP microcontroller firmware management"
+      homepage.icon: "esphome.png"
+      homepage.group: "Home"
+      homepage.href: "https://esphome.homedev.landingsnet.com"
     env_file:
       - .env
       

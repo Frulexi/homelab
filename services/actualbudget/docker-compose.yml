@@ -10,6 +10,11 @@ services:
       traefik.http.routers.actualbudget.tls.certresolver: "cloudflare"
       traefik.http.routers.actualbudget.rule: "Host(`actualbudget.homedev.landingsnet.com`)"
       traefik.http.services.actualbudget.loadbalancer.server.port: "5006"
+      homepage.name: "Actual Budget"
+      homepage.description: "Personal finance and budgeting"
+      homepage.icon: "actual-budget.png"
+      homepage.group: "Finance"
+      homepage.href: "https://actualbudget.homedev.landingsnet.com"
     env_file:
       - .env
     volumes:

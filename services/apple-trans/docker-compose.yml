@@ -17,6 +17,11 @@ services:
       # Sablier labels (routing is in Traefik dynamic.yml)
       sablier.enable: "true"
       sablier.group: "apple-trans"
+      homepage.name: "Apple Trans"
+      homepage.description: "Apple Card to CSV converter"
+      homepage.icon: "docker.png"
+      homepage.group: "Finance"
+      homepage.href: "https://apple-trans.homedev.landingsnet.com"
 
 networks:
   apple-trans_network:

@@ -26,6 +26,11 @@ services:
       traefik.http.routers.alloy.tls.certresolver: "cloudflare"
       traefik.http.routers.alloy.rule: "Host(`alloy.homedev.landingsnet.com`)"
       traefik.http.services.alloy.loadbalancer.server.port: "12345"
+      homepage.name: "Alloy"
+      homepage.description: "Grafana Alloy log and metrics collector"
+      homepage.icon: "alloy.png"
+      homepage.group: "Monitoring"
+      homepage.href: "https://alloy.homedev.landingsnet.com"
     networks:
       - monitoring_network
       - traefik_network
@@ -48,6 +53,11 @@ services:
       traefik.http.routers.grafana.tls.certresolver: "cloudflare"
       traefik.http.routers.grafana.rule: "Host(`grafana.homedev.landingsnet.com`)"
       traefik.http.services.grafana.loadbalancer.server.port: "3000"
+      homepage.name: "Grafana"
+      homepage.description: "Observability dashboards"
+      homepage.icon: "grafana.png"
+      homepage.group: "Monitoring"
+      homepage.href: "https://grafana.homedev.landingsnet.com"
     networks:
       - monitoring_network
       - traefik_network
@@ -85,6 +95,11 @@ services:
       traefik.http.routers.prometheus.tls.certresolver: "cloudflare"
       traefik.http.routers.prometheus.rule: "Host(`prometheus.homedev.landingsnet.com`)"
       traefik.http.services.prometheus.loadbalancer.server.port: "9090"
+      homepage.name: "Prometheus"
+      homepage.description: "Metrics collection and alerting"
+      homepage.icon: "prometheus.png"
+      homepage.group: "Monitoring"
+      homepage.href: "https://prometheus.homedev.landingsnet.com"
     networks:
       - monitoring_network
       - traefik_network
