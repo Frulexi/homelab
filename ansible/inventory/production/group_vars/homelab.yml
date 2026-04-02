@@ -45,7 +45,6 @@ docker_daemon_config:
 docker_service_networks:
   - traefik_network
   - monitoring_network
-  - n8n_network
   - portainer_network
   - unifi_network
   - authentik_network
