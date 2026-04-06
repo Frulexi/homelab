@@ -39,13 +39,13 @@ services:
       traefik.enable: "true"
       traefik.http.routers.authentik.entrypoints: "websecure"
       traefik.http.routers.authentik.tls.certresolver: "cloudflare"
-      traefik.http.routers.authentik.rule: "Host(`authentik.homedev.landingsnet.com`)"
+      traefik.http.routers.authentik.rule: "Host(`authentik.prod.landingsnet.com`)"
       traefik.http.services.authentik.loadbalancer.server.port: "9000"
       homepage.name: "Authentik"
       homepage.description: "Identity and access management"
       homepage.icon: "authentik.png"
       homepage.group: "Security"
-      homepage.href: "https://authentik.homedev.landingsnet.com"
+      homepage.href: "https://authentik.prod.landingsnet.com"
     restart: unless-stopped
     volumes:
     - ./media:/media

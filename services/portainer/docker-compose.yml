@@ -17,13 +17,13 @@ services:
       traefik.enable: "true"
       traefik.http.routers.portainer.entrypoints: "websecure"
       traefik.http.routers.portainer.tls.certresolver: "cloudflare"
-      traefik.http.routers.portainer.rule: "Host(`portainer.homedev.landingsnet.com`)"
+      traefik.http.routers.portainer.rule: "Host(`portainer.prod.landingsnet.com`)"
       traefik.http.services.portainer.loadbalancer.server.port: "9000"
       homepage.name: "Portainer"
       homepage.description: "Docker container management"
       homepage.icon: "portainer.png"
       homepage.group: "Infrastructure"
-      homepage.href: "https://portainer.homedev.landingsnet.com"
+      homepage.href: "https://portainer.prod.landingsnet.com"
 
 volumes:
   portainer_data:
