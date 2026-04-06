@@ -5,4 +5,18 @@
 #   homepage.description: "Short description"
 #   homepage.icon: "icon.png"        # see https://github.com/walkxcode/dashboard-icons
 #   homepage.group: "Group Name"     # must match a group defined in settings.yaml
-#   homepage.href: "https://service.homedev.landingsnet.com"
+#   homepage.href: "https://service.prod.landingsnet.com"
+
+- Infrastructure:
+    - UniFi Gateway:
+        href: https://gateway.home.landingsnet.com
+        description: UniFi gateway management
+        icon: unifi.png
+    - Proxmox:
+        href: https://proxmox.home.landingsnet.com
+        description: Proxmox hypervisor
+        icon: proxmox.png
+    - Home Assistant:
+        href: https://ha.home.landingsnet.com
+        description: Home automation
+        icon: home-assistant.png
