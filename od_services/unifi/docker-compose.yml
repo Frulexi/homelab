@@ -1,6 +1,6 @@
 services:
     unifi-db:
-      image: docker.io/mongo:8.2.2-rc0-noble
+      image: docker.io/mongo:8.2.7-rc0-noble
       container_name: unifi-db
       env_file:
         - .env
