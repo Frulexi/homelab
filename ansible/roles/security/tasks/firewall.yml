@@ -25,6 +25,15 @@
     comment: Managed by Ansible (homelab security role)
   loop: "{{ security_firewall_allowed_udp_ports | default([]) | unique }}"
 
+- name: Allow source-based rules
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ item.from }}"
+    to_port: "{{ item.port }}"
+    proto: "{{ item.proto | default('tcp') }}"
+    comment: "{{ item.comment | default('Managed by Ansible (homelab security role)') }}"
+  loop: "{{ security_firewall_allowed_source_rules | default([]) }}"
+
 - name: Ensure UFW is enabled
   community.general.ufw:
     state: enabled
