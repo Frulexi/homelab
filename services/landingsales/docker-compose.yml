@@ -1,0 +1,32 @@
+services:
+  landingsales:
+    image: landing_sales:01
+    container_name: landingsales
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - traefik_network
+      - snipe-it_network
+    labels:
+      com.homelab.service: "landingsales"
+      com.homelab.maintainer: "homelab"
+
+      traefik.enable: "true"
+      traefik.docker.network: "traefik_network"
+      traefik.http.routers.sales-dashboard.entrypoints: "websecure"
+      traefik.http.routers.sales-dashboard.tls.certresolver: "cloudflare"
+      traefik.http.routers.sales-dashboard.rule: "Host(`landingsales.prod.landingsnet.com`)"
+      traefik.http.services.sales-dashboard.loadbalancer.server.port: "8050"
+
+      homepage.name: "landingsales"
+      homepage.description: "Snipe-IT sales & inventory"
+      homepage.icon: "plotly.png"
+      homepage.group: "Business"
+      homepage.href: "https://landingsales.prod.landingsnet.com"
+
+networks:
+  traefik_network:
+    external: true
+  snipe-it_network:
+    external: true

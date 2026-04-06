@@ -13,6 +13,7 @@ security_firewall_allowed_tcp_ports:
   - "8080"  # Unifi
   - "8443"  # Unifi
   - "21064" # Home Assistant
+security_firewall_allowed_source_rules: []
 security_firewall_allowed_udp_ports:
   - "3478"   # Unifi
   - "10001"  # Unifi

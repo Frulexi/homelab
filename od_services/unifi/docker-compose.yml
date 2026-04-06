@@ -15,7 +15,7 @@ services:
         com.homelab.maintainer: "homelab"
 
     unifi-network-application:
-      image: lscr.io/linuxserver/unifi-network-application:10.1.85
+      image: lscr.io/linuxserver/unifi-network-application:10.1.89
       container_name: unifi-network-application
       env_file:
         - .env
@@ -40,7 +40,7 @@ services:
         traefik.http.routers.unifi.tls: "true"
         traefik.http.routers.unifi.entrypoints: "websecure"
         traefik.http.routers.unifi.tls.certresolver: "cloudflare"
-        traefik.http.routers.unifi.rule: "Host(`unifi.homedev.landingsnet.com`)"
+        traefik.http.routers.unifi.rule: "Host(`unifi.prod.landingsnet.com`)"
         traefik.http.services.unifi.loadbalancer.server.port: "8443"
         traefik.http.services.unifi.loadbalancer.server.scheme: "https"
         traefik.http.services.unifi.loadbalancer.serverstransport: "ignorecert@file"
@@ -48,7 +48,7 @@ services:
         homepage.description: "Ubiquiti network management"
         homepage.icon: "unifi.png"
         homepage.group: "Network"
-        homepage.href: "https://unifi.homedev.landingsnet.com"
+        homepage.href: "https://unifi.prod.landingsnet.com"
 
 networks:
   unifi_network:

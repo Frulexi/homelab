@@ -10,6 +10,10 @@ security_firewall_enabled: true
 security_firewall_allowed_tcp_ports:
   - "{{ security_ssh_port }}"
 security_firewall_allowed_udp_ports: []
+security_firewall_allowed_source_rules:
+  - from: "172.16.0.0/12"
+    port: "443"
+    comment: "Docker containers HTTPS hairpin"
 security_fail2ban_enabled: true
 security_fail2ban_maxretry: 5
 security_fail2ban_findtime: 600
@@ -45,7 +49,6 @@ docker_daemon_config:
 docker_service_networks:
   - traefik_network
   - monitoring_network
-  - n8n_network
   - portainer_network
   - unifi_network
   - authentik_network

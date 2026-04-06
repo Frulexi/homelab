@@ -4,8 +4,32 @@ http:
       insecureSkipVerify: true
 
   routers:
+    unifi-gateway:
+      rule: "Host(`gateway.home.landingsnet.com`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+      service: unifi-gateway
+
+    proxmox:
+      rule: "Host(`proxmox.home.landingsnet.com`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+      service: proxmox
+
+    homeassistant:
+      rule: "Host(`ha.home.landingsnet.com`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+      service: homeassistant
+
     apple-trans:
-      rule: "Host(`apple-trans.homedev.landingsnet.com`)"
+      rule: "Host(`apple-trans.prod.landingsnet.com`)"
       entryPoints:
         - websecure
       tls:
@@ -27,6 +51,23 @@ http:
             refreshFrequency: 5s
 
   services:
+    unifi-gateway:
+      loadBalancer:
+        serversTransport: ignorecert
+        servers:
+          - url: "https://192.168.1.1"
+
+    proxmox:
+      loadBalancer:
+        serversTransport: ignorecert
+        servers:
+          - url: "https://192.168.1.50:8006"
+
+    homeassistant:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.189:8123"
+
     apple-trans:
       loadBalancer:
         servers:

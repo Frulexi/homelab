@@ -21,12 +21,12 @@ services:
       traefik.enable: "true"
       traefik.http.routers.snipeit.entrypoints: "websecure"
       traefik.http.routers.snipeit.tls.certresolver: "cloudflare"
-      traefik.http.routers.snipeit.rule: "Host(`snipeit.homedev.landingsnet.com`)"
+      traefik.http.routers.snipeit.rule: "Host(`snipeit.prod.landingsnet.com`)"
       traefik.http.services.snipeit.loadbalancer.server.port: "80"
 
       traefik.http.routers.snipeit.middlewares: "snipeit-headers"
       traefik.http.middlewares.snipeit-headers.headers.customrequestheaders.X-Forwarded-Proto: "https"
-      traefik.http.middlewares.snipeit-headers.headers.customrequestheaders.X-Forwarded-Host: "snipeit.homedev.landingsnet.com"
+      traefik.http.middlewares.snipeit-headers.headers.customrequestheaders.X-Forwarded-Host: "snipeit.prod.landingsnet.com"
 
       # Increase timeouts
       traefik.http.services.snipeit.loadbalancer.passhostheader: "true"
@@ -34,7 +34,7 @@ services:
       homepage.description: "IT asset management"
       homepage.icon: "snipe-it.png"
       homepage.group: "Infrastructure"
-      homepage.href: "https://snipeit.homedev.landingsnet.com"
+      homepage.href: "https://snipeit.prod.landingsnet.com"
 
   db:
     image: mariadb:11.4.7

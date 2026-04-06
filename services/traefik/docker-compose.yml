@@ -21,7 +21,6 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - traefik_network
-      - n8n_network
       - portainer_network
       - unifi_network
       - monitoring_network
@@ -44,15 +43,13 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.services.sablier.loadbalancer.server.port: "10000"
-      traefik.http.routers.sablier.rule: "Host(`sablier.homedev.landingsnet.com`)" # Sablier API access (optional)
+      traefik.http.routers.sablier.rule: "Host(`sablier.prod.landingsnet.com`)" # Sablier API access (optional)
       
 
 
 networks:
   traefik_network:
     external: true  
-  n8n_network:
-    external: true
   portainer_network:
     external: true
   unifi_network:

@@ -1,9 +1,9 @@
 services:
   alloy:
-    image: grafana/alloy:v1.13.2
+    image: grafana/alloy:v1.15.0
     container_name: alloy
     restart: unless-stopped
-    hostname: owl_cloud_dev
+    hostname: prod-vm1
     volumes:
       - ./config/config.alloy:/etc/alloy/config.alloy
       - alloy-data:/var/lib/alloy/data
@@ -24,24 +24,26 @@ services:
       traefik.enable: "true"
       traefik.http.routers.alloy.entrypoints: "websecure"
       traefik.http.routers.alloy.tls.certresolver: "cloudflare"
-      traefik.http.routers.alloy.rule: "Host(`alloy.homedev.landingsnet.com`)"
+      traefik.http.routers.alloy.rule: "Host(`alloy.prod.landingsnet.com`)"
       traefik.http.services.alloy.loadbalancer.server.port: "12345"
       homepage.name: "Alloy"
       homepage.description: "Grafana Alloy log and metrics collector"
       homepage.icon: "alloy.png"
       homepage.group: "Monitoring"
-      homepage.href: "https://alloy.homedev.landingsnet.com"
+      homepage.href: "https://alloy.prod.landingsnet.com"
     networks:
       - monitoring_network
       - traefik_network
 
   grafana:
-    image: grafana/grafana-oss:12.4.0
+    image: grafana/grafana-oss:12.4.2
     container_name: grafana
     restart: unless-stopped
     environment:
-      - GF_SERVER_ROOT_URL=https://grafana.homedev.landingsnet.com
-      - GF_SERVER_DOMAIN=grafana.homedev.landingsnet.com
+      - GF_SERVER_ROOT_URL=https://grafana.prod.landingsnet.com
+      - GF_SERVER_DOMAIN=grafana.prod.landingsnet.com
+      - GF_AUTH_GENERIC_OAUTH_SKIP_ORG_ROLE_SYNC=true
+      - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Admin
     volumes:
       - grafana-data:/var/lib/grafana
       - ./config/provisioning:/etc/grafana/provisioning
@@ -51,19 +53,19 @@ services:
       traefik.enable: "true"
       traefik.http.routers.grafana.entrypoints: "websecure"
       traefik.http.routers.grafana.tls.certresolver: "cloudflare"
-      traefik.http.routers.grafana.rule: "Host(`grafana.homedev.landingsnet.com`)"
+      traefik.http.routers.grafana.rule: "Host(`grafana.prod.landingsnet.com`)"
       traefik.http.services.grafana.loadbalancer.server.port: "3000"
       homepage.name: "Grafana"
       homepage.description: "Observability dashboards"
       homepage.icon: "grafana.png"
       homepage.group: "Monitoring"
-      homepage.href: "https://grafana.homedev.landingsnet.com"
+      homepage.href: "https://grafana.prod.landingsnet.com"
     networks:
       - monitoring_network
       - traefik_network
 
   loki:
-    image: grafana/loki:3.6.7
+    image: grafana/loki:3.7.1
     container_name: loki
     restart: unless-stopped
     ports:
@@ -76,7 +78,7 @@ services:
       - monitoring_network
 
   prometheus:
-    image: prom/prometheus:v3.10.0
+    image: prom/prometheus:v3.11.0
     container_name: prometheus
     restart: unless-stopped
     ports:
@@ -93,13 +95,13 @@ services:
       traefik.enable: "true"
       traefik.http.routers.prometheus.entrypoints: "websecure"
       traefik.http.routers.prometheus.tls.certresolver: "cloudflare"
-      traefik.http.routers.prometheus.rule: "Host(`prometheus.homedev.landingsnet.com`)"
+      traefik.http.routers.prometheus.rule: "Host(`prometheus.prod.landingsnet.com`)"
       traefik.http.services.prometheus.loadbalancer.server.port: "9090"
       homepage.name: "Prometheus"
       homepage.description: "Metrics collection and alerting"
       homepage.icon: "prometheus.png"
       homepage.group: "Monitoring"
-      homepage.href: "https://prometheus.homedev.landingsnet.com"
+      homepage.href: "https://prometheus.prod.landingsnet.com"
     networks:
       - monitoring_network
       - traefik_network

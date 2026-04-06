@@ -21,7 +21,7 @@ services:
       homepage.description: "Apple Card to CSV converter"
       homepage.icon: "docker.png"
       homepage.group: "Finance"
-      homepage.href: "https://apple-trans.homedev.landingsnet.com"
+      homepage.href: "https://apple-trans.prod.landingsnet.com"
 
 networks:
   apple-trans_network:
