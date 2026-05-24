@@ -8,8 +8,8 @@ services:
       - TZ=${TZ}
     volumes:
       - jellyfin_config:/config
-      - /opt/homelab/media/movies:/data/movies
-      - /opt/homelab/media/tv:/data/tv
+      - /opt/homelab/media/media/movies:/data/movies
+      - /opt/homelab/media/media/tv:/data/tv
     networks:
       - media_server_network
       - traefik_network
@@ -38,8 +38,7 @@ services:
       - TZ=${TZ}
     volumes:
       - sonarr_config:/config
-      - /opt/homelab/media/tv:/data/tv
-      - /opt/homelab/media/downloads:/data/downloads
+      - /opt/homelab/media:/data
     networks:
       - media_server_network
       - traefik_network
@@ -68,8 +67,7 @@ services:
       - TZ=${TZ}
     volumes:
       - radarr_config:/config
-      - /opt/homelab/media/movies:/data/movies
-      - /opt/homelab/media/downloads:/data/downloads
+      - /opt/homelab/media:/data
     networks:
       - media_server_network
       - traefik_network
@@ -152,8 +150,7 @@ services:
       - TZ=${TZ}
     volumes:
       - bazarr_config:/config
-      - /opt/homelab/media/movies:/data/movies
-      - /opt/homelab/media/tv:/data/tv
+      - /opt/homelab/media:/data
     networks:
       - media_server_network
       - traefik_network
@@ -182,9 +179,7 @@ services:
       - TZ=${TZ}
     volumes:
       - qbittorrent_config:/config
-      - /opt/homelab/media/downloads/qbittorrent/completed:/data/downloads/completed
-      - /opt/homelab/media/downloads/qbittorrent/incomplete:/data/downloads/incomplete
-      - /opt/homelab/media/downloads/qbittorrent/torrents:/data/downloads/torrents
+      - /opt/homelab/media:/data
     networks:
       - media_server_network
       - traefik_network
@@ -213,7 +208,7 @@ services:
       - TZ=${TZ}
     volumes:
       - sabnzbd_config:/config
-      - /opt/homelab/media/downloads:/data/downloads
+      - /opt/homelab/media:/data
     networks:
       - media_server_network
       - traefik_network
