@@ -19,8 +19,14 @@ services:
       traefik.enable: "true"
       traefik.http.routers.jellyfin.entrypoints: "websecure"
       traefik.http.routers.jellyfin.tls.certresolver: "cloudflare"
-      traefik.http.routers.jellyfin.rule: "Host(`jellyfin.dev.landingsnet.com`)"
+      traefik.http.routers.jellyfin.rule: "Host(`jellyfin.prod.landingsnet.com`)"
       traefik.http.services.jellyfin.loadbalancer.server.port: "8096"
+      traefik.docker.network: "traefik_network"
+      homepage.name: "Jellyfin"
+      homepage.description: "Media streaming server"
+      homepage.icon: "jellyfin.png"
+      homepage.group: "Media"
+      homepage.href: "https://jellyfin.prod.landingsnet.com"
     restart: unless-stopped
 
   sonarr:
@@ -43,8 +49,14 @@ services:
       traefik.enable: "true"
       traefik.http.routers.sonarr.entrypoints: "websecure"
       traefik.http.routers.sonarr.tls.certresolver: "cloudflare"
-      traefik.http.routers.sonarr.rule: "Host(`sonarr.dev.landingsnet.com`)"
+      traefik.http.routers.sonarr.rule: "Host(`sonarr.prod.landingsnet.com`)"
       traefik.http.services.sonarr.loadbalancer.server.port: "8989"
+      traefik.docker.network: "traefik_network"
+      homepage.name: "Sonarr"
+      homepage.description: "TV series management"
+      homepage.icon: "sonarr.png"
+      homepage.group: "Media"
+      homepage.href: "https://sonarr.prod.landingsnet.com"
     restart: unless-stopped
 
   radarr:
@@ -67,8 +79,14 @@ services:
       traefik.enable: "true"
       traefik.http.routers.radarr.entrypoints: "websecure"
       traefik.http.routers.radarr.tls.certresolver: "cloudflare"
-      traefik.http.routers.radarr.rule: "Host(`radarr.dev.landingsnet.com`)"
+      traefik.http.routers.radarr.rule: "Host(`radarr.prod.landingsnet.com`)"
       traefik.http.services.radarr.loadbalancer.server.port: "7878"
+      traefik.docker.network: "traefik_network"
+      homepage.name: "Radarr"
+      homepage.description: "Movie management"
+      homepage.icon: "radarr.png"
+      homepage.group: "Media"
+      homepage.href: "https://radarr.prod.landingsnet.com"
     restart: unless-stopped
 
   prowlarr:
@@ -89,8 +107,14 @@ services:
       traefik.enable: "true"
       traefik.http.routers.prowlarr.entrypoints: "websecure"
       traefik.http.routers.prowlarr.tls.certresolver: "cloudflare"
-      traefik.http.routers.prowlarr.rule: "Host(`prowlarr.dev.landingsnet.com`)"
+      traefik.http.routers.prowlarr.rule: "Host(`prowlarr.prod.landingsnet.com`)"
       traefik.http.services.prowlarr.loadbalancer.server.port: "9696"
+      traefik.docker.network: "traefik_network"
+      homepage.name: "Prowlarr"
+      homepage.description: "Indexer manager"
+      homepage.icon: "prowlarr.png"
+      homepage.group: "Media"
+      homepage.href: "https://prowlarr.prod.landingsnet.com"
     restart: unless-stopped
 
   jellyseerr:
@@ -109,8 +133,14 @@ services:
       traefik.enable: "true"
       traefik.http.routers.jellyseerr.entrypoints: "websecure"
       traefik.http.routers.jellyseerr.tls.certresolver: "cloudflare"
-      traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.dev.landingsnet.com`)"
+      traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.prod.landingsnet.com`)"
       traefik.http.services.jellyseerr.loadbalancer.server.port: "5055"
+      traefik.docker.network: "traefik_network"
+      homepage.name: "Jellyseerr"
+      homepage.description: "Media request management"
+      homepage.icon: "jellyseerr.png"
+      homepage.group: "Media"
+      homepage.href: "https://jellyseerr.prod.landingsnet.com"
     restart: unless-stopped
 
   bazarr:
@@ -133,8 +163,14 @@ services:
       traefik.enable: "true"
       traefik.http.routers.bazarr.entrypoints: "websecure"
       traefik.http.routers.bazarr.tls.certresolver: "cloudflare"
-      traefik.http.routers.bazarr.rule: "Host(`bazarr.dev.landingsnet.com`)"
+      traefik.http.routers.bazarr.rule: "Host(`bazarr.prod.landingsnet.com`)"
       traefik.http.services.bazarr.loadbalancer.server.port: "6767"
+      traefik.docker.network: "traefik_network"
+      homepage.name: "Bazarr"
+      homepage.description: "Subtitle management"
+      homepage.icon: "bazarr.png"
+      homepage.group: "Media"
+      homepage.href: "https://bazarr.prod.landingsnet.com"
     restart: unless-stopped
 
   qbittorrent:
@@ -158,8 +194,14 @@ services:
       traefik.enable: "true"
       traefik.http.routers.qbittorrent.entrypoints: "websecure"
       traefik.http.routers.qbittorrent.tls.certresolver: "cloudflare"
-      traefik.http.routers.qbittorrent.rule: "Host(`qbittorrent.dev.landingsnet.com`)"
+      traefik.http.routers.qbittorrent.rule: "Host(`qbittorrent.prod.landingsnet.com`)"
       traefik.http.services.qbittorrent.loadbalancer.server.port: "8080"
+      traefik.docker.network: "traefik_network"
+      homepage.name: "qBittorrent"
+      homepage.description: "Torrent client"
+      homepage.icon: "qbittorrent.png"
+      homepage.group: "Media"
+      homepage.href: "https://qbittorrent.prod.landingsnet.com"
     restart: unless-stopped
 
   sabnzbd:
@@ -181,8 +223,14 @@ services:
       traefik.enable: "true"
       traefik.http.routers.sabnzbd.entrypoints: "websecure"
       traefik.http.routers.sabnzbd.tls.certresolver: "cloudflare"
-      traefik.http.routers.sabnzbd.rule: "Host(`sabnzbd.dev.landingsnet.com`)"
+      traefik.http.routers.sabnzbd.rule: "Host(`sabnzbd.prod.landingsnet.com`)"
       traefik.http.services.sabnzbd.loadbalancer.server.port: "8080"
+      traefik.docker.network: "traefik_network"
+      homepage.name: "SABnzbd"
+      homepage.description: "Usenet downloader"
+      homepage.icon: "sabnzbd.png"
+      homepage.group: "Media"
+      homepage.href: "https://sabnzbd.prod.landingsnet.com"
     restart: unless-stopped
 
 volumes:
