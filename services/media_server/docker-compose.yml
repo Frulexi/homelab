@@ -206,6 +206,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - SABNZBD__misc__host_whitelist=sabnzbd,sabnzbd.prod.landingsnet.com,
     volumes:
       - sabnzbd_config:/config
       - /opt/homelab/media:/data
