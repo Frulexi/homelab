@@ -20,6 +20,12 @@
 
   "packageRules": [
     {
+      "description": "Automerge minor and patch updates for non-databases",
+      "matchUpdateTypes": ["minor", "patch"],
+      "excludePackagePatterns": ["postgres", "mongo", "mysql", "redis"],
+      "automerge": true
+    },
+    {
       "description": "EXCLUDE: Local custom image",
       "matchDatasources": ["docker"],
       "matchPackagePatterns": ["^apple-trans$"],
