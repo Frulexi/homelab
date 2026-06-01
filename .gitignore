@@ -19,5 +19,3 @@ tmp/
 secrets/
 .idea/
 .vscode
-ansible/inventory/production/group_vars/all/vault.yml
-ansible/inventory/staging/group_vars/all/vault.yml
