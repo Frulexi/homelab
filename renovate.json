@@ -26,6 +26,12 @@
       "automerge": true
     },
     {
+      "description": "Pin digests for any container using the :latest tag",
+      "matchDatasources": ["docker"],
+      "matchCurrentValue": "latest",
+      "pinDigests": true
+    },
+    {
       "description": "EXCLUDE: Local custom image",
       "matchDatasources": ["docker"],
       "matchPackagePatterns": ["^apple-trans$"],
