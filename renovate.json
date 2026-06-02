@@ -32,9 +32,9 @@
       "pinDigests": true
     },
     {
-      "description": "EXCLUDE: Local custom image",
+      "description": "EXCLUDE: Local custom images",
       "matchDatasources": ["docker"],
-      "matchPackagePatterns": ["^apple-trans$"],
+      "matchPackagePatterns": ["^apple-trans$", "^landing_sales$", "^landingsales$"],
       "enabled": false
     },
     {
