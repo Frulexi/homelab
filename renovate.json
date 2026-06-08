@@ -9,8 +9,8 @@
   "timezone": "America/New_York",
   "schedule": ["after 9am and before 5pm every weekend"],
 
-  "prConcurrentLimit": 3,
-  "prHourlyLimit": 2,
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
   "dependencyDashboardApproval": false,
 
   "automerge": false,
