@@ -11,6 +11,7 @@
 
   "prConcurrentLimit": 3,
   "prHourlyLimit": 2,
+  "dependencyDashboardApproval": false,
 
   "automerge": false,
   "labels": ["dependencies", "renovate"],
