@@ -64,7 +64,8 @@
       "description": "GROUP: Traefik proxy stack",
       "matchDatasources": ["docker"],
       "matchPackagePatterns": ["^traefik$", "^sablierapp/"],
-      "groupName": "Traefik Proxy"
+      "groupName": "Traefik Proxy",
+      "fetchChangeLogs": "off"
     },
     {
       "description": "Actualbudget uses :latest (no semver tags available) - pin digest",
