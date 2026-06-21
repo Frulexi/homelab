@@ -1,7 +1,7 @@
 services:
   actual_server:
     container_name: actualbudget
-    image: docker.io/actualbudget/actual-server:latest
+    image: docker.io/actualbudget/actual-server:latest@sha256:74385f8067f401e61f0be9e343c471705c42dfaa195295c40c5b2f15f4dcc9d4
     labels:
       com.homelab.service: "actualbudget"
       com.homelab.maintainer: "homelab"
