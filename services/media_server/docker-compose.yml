@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   sonarr:
-    image: lscr.io/linuxserver/sonarr:latest@sha256:02bc962946fef994e67a38152446df25c10a52f8583aefeeb6467f9dd44cab99
+    image: lscr.io/linuxserver/sonarr:latest@sha256:24acea2956a0ccb11f103877d9f4f8576600fb34bff34820ed749c2256dab89f
     container_name: sonarr
     environment:
       - PUID=${PUID}
