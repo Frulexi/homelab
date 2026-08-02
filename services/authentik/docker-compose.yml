@@ -31,7 +31,7 @@ services:
       AUTHENTIK_POSTGRESQL__USER: ${POSTGRES_USER}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
       AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
-    image: ghcr.io/goauthentik/server:2026.5.3
+    image: ghcr.io/goauthentik/server:2026.5.6
     container_name: authentik-server
     labels:
       com.homelab.service: "authentik-server"
@@ -64,7 +64,7 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${POSTGRES_PASSWORD}
       AUTHENTIK_POSTGRESQL__USER: ${POSTGRES_USER}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
-    image: ghcr.io/goauthentik/server:2026.5.3
+    image: ghcr.io/goauthentik/server:2026.5.6
     container_name: authentik-worker
     restart: unless-stopped
     user: root
