@@ -15,7 +15,7 @@ services:
         com.homelab.maintainer: "homelab"
 
     unifi-network-application:
-      image: lscr.io/linuxserver/unifi-network-application:10.1.89
+      image: lscr.io/linuxserver/unifi-network-application:10.4.57
       container_name: unifi-network-application
       env_file:
         - .env
