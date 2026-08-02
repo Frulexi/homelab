@@ -57,4 +57,5 @@ docker_service_networks:
   - snipe-it_network
   - homepage_network
   - media_server_network
+  - immich_network
 
