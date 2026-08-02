@@ -49,7 +49,7 @@ services:
 
   redis:
     container_name: immich_redis
-    image: docker.io/valkey/valkey:8-alpine
+    image: docker.io/valkey/valkey:9-alpine
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
     restart: unless-stopped
