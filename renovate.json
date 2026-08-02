@@ -12,7 +12,8 @@
   "prHourlyLimit": 0,
   "dependencyDashboardApproval": false,
 
-  "automerge": false,
+  "automerge": true,
+  "automergeType": "pr",
   "labels": ["dependencies", "renovate"],
 
   "dependencyDashboard": true,
@@ -20,8 +21,8 @@
 
   "packageRules": [
     {
-      "description": "Automerge minor and patch updates for non-databases",
-      "matchUpdateTypes": ["minor", "patch"],
+      "description": "Automerge minor, patch, and digest updates for non-databases",
+      "matchUpdateTypes": ["minor", "patch", "pinDigest", "digest"],
       "excludePackagePatterns": ["postgres", "mongo", "mysql", "redis"],
       "automerge": true
     },
@@ -29,7 +30,8 @@
       "description": "Pin digests for any container using the :latest tag",
       "matchDatasources": ["docker"],
       "matchCurrentValue": "latest",
-      "pinDigests": true
+      "pinDigests": true,
+      "automerge": true
     },
     {
       "description": "EXCLUDE: Local custom images",
@@ -72,12 +74,14 @@
       "description": "Actualbudget uses :latest (no semver tags available) - pin digest",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["actualbudget/actual-server"],
-      "pinDigests": true
+      "pinDigests": true,
+      "automerge": true
     },
     {
       "description": "Database images require manual review",
       "matchDatasources": ["docker"],
       "matchPackagePatterns": ["postgres", "mongo", "mysql", "redis"],
+      "automerge": false,
       "labels": ["dependencies", "database", "requires-review"]
     },
     {
