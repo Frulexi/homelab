@@ -1,7 +1,7 @@
 services:
   minecraft:
     container_name: minecraft-bedrock
-    image: itzg/minecraft-bedrock-server:2026.7.6  # The Docker image for the Bedrock server
+    image: itzg/minecraft-bedrock-server:2026.8.0  # The Docker image for the Bedrock server
     volumes:
       - ./data:/data  # Persistent volume for server 
     stdin_open: true  # Keep STDIN open
