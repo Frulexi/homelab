@@ -37,7 +37,7 @@ services:
       homepage.href: "https://snipeit.prod.landingsnet.com"
 
   db:
-    image: mariadb:11.8.8
+    image: mariadb:12.3.3
     container_name: snipe-it-db
     restart: unless-stopped
     environment:
