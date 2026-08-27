@@ -1,6 +1,6 @@
 services:
   alloy:
-    image: grafana/alloy:v1.18.1
+    image: grafana/alloy:v1.19.2
     container_name: alloy
     restart: unless-stopped
     hostname: prod-vm1
@@ -65,7 +65,7 @@ services:
       - traefik_network
 
   loki:
-    image: grafana/loki:3.7.6
+    image: grafana/loki:3.7.7
     container_name: loki
     restart: unless-stopped
     ports:
