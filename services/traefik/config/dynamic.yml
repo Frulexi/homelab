@@ -38,6 +38,14 @@ http:
         - sablier-apple-trans
       service: apple-trans
 
+    hermes:
+      rule: "Host(`hermes.prod.landingsnet.com`) || Host(`hermes.home.landingsnet.com`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+      service: hermes
+
   middlewares:
     sablier-apple-trans:
       plugin:
@@ -72,3 +80,8 @@ http:
       loadBalancer:
         servers:
           - url: "http://apple-trans:8080"
+
+    hermes:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.225:8787"
