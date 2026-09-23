@@ -4,9 +4,12 @@
     disk: /
 
 - search:
-    provider: duckduckgo
+    provider: custom
+    url: https://www.google.com/search?udm=50&aep=11&q=
     target: _blank
     focus: false
+    showSearchSuggestions: true
+    suggestionUrl: https://suggestqueries.google.com/complete/search?client=chrome&q=
 
 - datetime:
     text_size: xl
