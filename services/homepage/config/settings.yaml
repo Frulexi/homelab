@@ -5,6 +5,7 @@ background: https://images.unsplash.com/photo-1619013971041-a3476a4a8300?q=80&w=
 headerStyle: clean
 useEqualHeights: true
 statusStyle: "dot"
+target: _self
 
 layout:
   Home:

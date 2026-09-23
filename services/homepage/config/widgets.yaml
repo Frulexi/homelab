@@ -6,7 +6,7 @@
 - search:
     provider: custom
     url: https://www.google.com/search?udm=50&aep=11&q=
-    target: _blank
+    target: _self
     focus: false
     showSearchSuggestions: true
     suggestionUrl: https://suggestqueries.google.com/complete/search?client=chrome&q=
