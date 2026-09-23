@@ -20,3 +20,17 @@
         href: https://ha.home.landingsnet.com
         description: Home automation
         icon: home-assistant.png
+
+- Agents:
+    - Hermes:
+        href: https://hermes.prod.landingsnet.com
+        description: Autonomous AI agent
+        icon: hermes.png
+    - Muse:
+        href: https://muse.ai
+        description: Personal AI agent
+        icon: muse.svg
+    - Gemini:
+        href: https://gemini.google.com
+        description: Google AI assistant
+        icon: google-gemini.png

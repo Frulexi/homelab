@@ -31,6 +31,9 @@ layout:
   Apps:
     style: row
     columns: 2
+  Agents:
+    style: row
+    columns: 3
   Media:
     style: row
     columns: 4
