@@ -13,7 +13,7 @@
   "dependencyDashboardApproval": false,
 
   "automerge": true,
-  "automergeType": "pr",
+  "automergeType": "branch",
   "labels": ["dependencies", "renovate"],
 
   "dependencyDashboard": true,
@@ -23,7 +23,7 @@
     {
       "description": "Automerge minor, patch, and digest updates for non-databases",
       "matchUpdateTypes": ["minor", "patch", "pinDigest", "digest"],
-      "excludePackagePatterns": ["postgres", "mongo", "mysql", "redis"],
+      "excludePackagePatterns": ["postgres", "mongo", "mysql", "redis", "mariadb"],
       "automerge": true
     },
     {
@@ -71,6 +71,12 @@
       "fetchChangeLogs": "off"
     },
     {
+      "description": "GROUP: Media Server stack",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["^jellyfin/", "^lscr.io/linuxserver/"],
+      "groupName": "Media Server"
+    },
+    {
       "description": "Actualbudget uses :latest (no semver tags available) - pin digest",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["actualbudget/actual-server"],
@@ -80,7 +86,7 @@
     {
       "description": "Database images require manual review",
       "matchDatasources": ["docker"],
-      "matchPackagePatterns": ["postgres", "mongo", "mysql", "redis"],
+      "matchPackagePatterns": ["postgres", "mongo", "mysql", "redis", "mariadb"],
       "automerge": false,
       "labels": ["dependencies", "database", "requires-review"]
     },
