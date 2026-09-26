@@ -1,0 +1,105 @@
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.15
+    container_name: bar_meilisearch
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - MEILI_ENV=production
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - traefik_network
+      - bar_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_network"
+      - "traefik.http.routers.bar-search.entrypoints=websecure"
+      - "traefik.http.routers.bar-search.tls.certresolver=cloudflare"
+      - "traefik.http.routers.bar-search.rule=Host(`bar.prod.landingsnet.com`) && PathPrefix(`/search`)"
+      - "traefik.http.routers.bar-search.priority=100"
+      - "traefik.http.routers.bar-search.middlewares=bar-search-strip"
+      - "traefik.http.middlewares.bar-search-strip.stripprefix.prefixes=/search"
+      - "traefik.http.services.bar-search.loadbalancer.server.port=7700"
+
+  redis:
+    image: redis:alpine
+    container_name: bar_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - bar_network
+
+  bar-assistant:
+    image: barassistant/server:v6
+    container_name: bar_assistant
+    restart: unless-stopped
+    depends_on:
+      - meilisearch
+      - redis
+    env_file:
+      - .env
+    environment:
+      - APP_URL=https://bar.prod.landingsnet.com/bar
+      - MEILISEARCH_KEY=${MEILI_MASTER_KEY}
+      - MEILISEARCH_HOST=http://meilisearch:7700
+      - REDIS_HOST=redis
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - ALLOW_REGISTRATION=true
+    volumes:
+      - bar_data:/var/www/cocktails/storage/bar-assistant
+    networks:
+      - traefik_network
+      - bar_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_network"
+      - "traefik.http.routers.bar-api.entrypoints=websecure"
+      - "traefik.http.routers.bar-api.tls.certresolver=cloudflare"
+      - "traefik.http.routers.bar-api.rule=Host(`bar.prod.landingsnet.com`) && PathPrefix(`/bar`)"
+      - "traefik.http.routers.bar-api.priority=100"
+      - "traefik.http.routers.bar-api.middlewares=bar-api-strip"
+      - "traefik.http.middlewares.bar-api-strip.stripprefix.prefixes=/bar"
+      - "traefik.http.services.bar-api.loadbalancer.server.port=8080"
+
+  salt-rim:
+    image: barassistant/salt-rim:v5
+    container_name: bar_salt_rim
+    restart: unless-stopped
+    depends_on:
+      - bar-assistant
+    environment:
+      - API_URL=https://bar.prod.landingsnet.com/bar
+      - MEILISEARCH_URL=https://bar.prod.landingsnet.com/search
+    networks:
+      - traefik_network
+      - bar_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_network"
+      - "traefik.http.routers.bar-ui.entrypoints=websecure"
+      - "traefik.http.routers.bar-ui.tls.certresolver=cloudflare"
+      - "traefik.http.routers.bar-ui.rule=Host(`bar.prod.landingsnet.com`)"
+      - "traefik.http.routers.bar-ui.priority=10"
+      - "traefik.http.services.bar-ui.loadbalancer.server.port=8080"
+      - "homepage.name=Bar Assistant"
+      - "homepage.description=Home bar cocktail & inventory manager"
+      - "homepage.icon=bar-assistant.png"
+      - "homepage.group=Services"
+      - "homepage.href=https://bar.prod.landingsnet.com"
+
+volumes:
+  bar_data:
+  meilisearch_data:
+  redis_data:
+
+networks:
+  bar_network:
+    name: bar_network
+  traefik_network:
+    external: true
