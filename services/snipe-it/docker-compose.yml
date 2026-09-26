@@ -1,6 +1,6 @@
 services:
   app:
-    image: snipe/snipe-it:latest@sha256:cd223d4f331a65b20b98f47f27b324c99d72dd33873e1fb39662582d23cc729f
+    image: snipe/snipe-it:latest@sha256:8b5a302a8f92ca64ce9f0d86f962fb8cc15f09812a539e5a4e80f006ad417c2b
     container_name: snipe-it
     restart: unless-stopped
     env_file:
