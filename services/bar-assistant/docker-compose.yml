@@ -1,6 +1,6 @@
 services:
   meilisearch:
-    image: getmeili/meilisearch:v1.15
+    image: getmeili/meilisearch:v1.54
     container_name: bar_meilisearch
     restart: unless-stopped
     env_file:
